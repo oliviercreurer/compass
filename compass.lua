@@ -1,4 +1,9 @@
--- Dunes (Softcut)
+--
+-- Compass
+-- Looper & Softcut sequencer
+-- @olivier
+-- [lines link]
+--
 
 rate = 1
 rec = 1
