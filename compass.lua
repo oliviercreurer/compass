@@ -16,7 +16,8 @@ panR = 0.7
 sel = 1
 last = 1
 pageNum = 1
-inputs = 2
+rateSlew = 0.1
+-- inputs = 2
 
 down_time = 0
 KEYDOWN1 = 0
@@ -61,7 +62,7 @@ function update_positions(i,x)
   positions[i] = util.clamp(x,0.1,loopEnd)
   for i=1,2 do
     softcut.pre_level(i,pre)
-    softcut.rate_slew_time(i,0.1)
+    softcut.rate_slew_time(i,rateSlew)
     softcut.rec(i,rec)
     softcut.loop_start(i,loopStart)
     softcut.loop_end(i,loopEnd)
@@ -136,6 +137,8 @@ function init()
       softcut.rate(1,x)
       softcut.rate(2,x)
     end}
+  params:add_control("RATE_SLEW", "RATE (SLEW)", controlspec.new(0,2,'lin',0.01,0.1))
+  params:set_action("RATE_SLEW", function(x) rateSlew = x end)
   params:add_control("FADE","FADE",controlspec.new(0,1,'lin',0.01,0.05))
   params:set_action("FADE", function(x) fade = x  end)
   params:add_control("PAN_R", "PAN(R)", controlspec.new(0,1,'lin',0.05,0.7))
@@ -186,7 +189,7 @@ function init()
     softcut.pan(2,panL)
     softcut.rate(i,1)
     softcut.phase_quant(i,0.03)
-    softcut.rate_slew_time(i,0)
+    softcut.rate_slew_time(i,rateSlew)
   end
   -- set PRE filter
   for i=1,2 do
