@@ -1,6 +1,4 @@
--- Compass (v1.0)
--- Looper & Softcut sequencer
--- @olivier
+-- Compass
 
 rate = 1
 rec = 1
@@ -68,6 +66,8 @@ function update_positions(i,x)
     softcut.loop_start(i,loopStart)
     softcut.loop_end(i,loopEnd)
     softcut.fade_time(i,fade)
+    softcut.pan(1,panR)
+    softcut.pan(2,panL)
   end
   redraw()
   -- print(loopStart .. " - " .. loopEnd)
@@ -136,12 +136,17 @@ function init()
       softcut.rate(1,x)
       softcut.rate(2,x)
     end}
+  params:add_control("FADE","FADE",controlspec.new(0,1,'lin',0.01,0.05))
+  params:set_action("FADE", function(x) fade = x  end)
+  params:add_control("PAN_R", "PAN(R)", controlspec.new(0,1,'lin',0.05,0.7))
+  params:set_action("PAN_R", function(x) panR = x end)
+  params:add_control("PAN_L", "PAN(L)", controlspec.new(0,1,'lin',0.05,0.3))
+  params:set_action("PAN_L", function(x) panL = x end)
   params:add_control("LOOP START","LOOP START",controlspec.new(1,loopEnd-1,'lin',1,1))
   params:set_action("LOOP START", function(x) loopStart = util.clamp(x,1,loopEnd-1) end)
   params:add_control("LOOP END","LOOP END",controlspec.new(loopStart+1,65,'lin',1,65))
   params:set_action("LOOP END", function(x) loopEnd = util.clamp(x,loopStart+1,65) end)
-  params:add_control("FADE","FADE",controlspec.new(0,1,'lin',0.01,0.05))
-  params:set_action("FADE", function(x) fade = x  end)
+  
   
   -- send audio input to softcut input + adjust cut volume
   
@@ -177,8 +182,8 @@ function init()
     softcut.rec_level(i,rec)
     softcut.pre_level(i,pre)
     softcut.rec(i,1)
-    softcut.pan(1,panL)
-    softcut.pan(2,panR)
+    softcut.pan(1,panR)
+    softcut.pan(2,panL)
     softcut.rate(i,1)
     softcut.phase_quant(i,0.03)
     softcut.rate_slew_time(i,0)
