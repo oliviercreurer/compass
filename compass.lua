@@ -1,9 +1,6 @@
---
--- Compass
+-- Compass (v1.0)
 -- Looper & Softcut sequencer
 -- @olivier
--- [lines link]
---
 
 rate = 1
 rec = 1
@@ -27,23 +24,44 @@ down_time = 0
 KEYDOWN1 = 0
 KEYDOWN2 = 0
 
-pages = {"EDIT", "CONTROLS", "COMMANDS"}
-controls = {"REC", "PRE", "FADE", "LENGTH"}
+pages = {"EDIT", "COMMANDS"}
+controls = {"REC", "PRE", "FADE"}
 positions = {0,0}
-ratesP = {0.5,1,2}
-ratesN = {-0.5,-1,-2}
-ends = {5,9,17,33,65}
+rates = {-2,-1,-0.5,0.5,1,2}
+-- ends = {5,9,17,33,65}
 
 STEPS = 16
 step = {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}
 
+mklk = midi.connect(1)
+
+mklk.event = function(data)
+  local d = midi.to_msg(data)
+  -- print something for various data types
+  -- ignore clock for the moment but look at other types
+  if d.type ~= "clock" then
+    if d.type == "cc" then
+        print("ch:".. d.ch .. " " .. d.type .. ":".. d.cc.. " ".. d.val)
+    elseif d.type=="note_on" or d.type=="note_off" then
+        --print("ch:".. d.ch .. " " .. d.type .. " note:".. d.note .. " vel:" .. d.vel)
+    elseif d.type=="channel_pressure" or d.type=="pitchbend" then
+        print("ch:".. d.ch .. " " .. d.type .. " val:" .. d.val)
+
+    elseif d.type=="start" then
+        print("start")
+    elseif d.type=="stop" then
+        print("stop")
+    elseif d.type=="continue" then
+        print("continue")
+    else
+        tab.print(d)
+    end
+  end
+end
+
 function update_positions(i,x)
   positions[i] = util.clamp(x,0.1,loopEnd)
-  -- print(positions[i])
   for i=1,2 do
-    if rate ~= 0 then
-      softcut.rate(i,rate)
-    end
     softcut.pre_level(i,pre)
     softcut.rate_slew_time(i,0.1)
     softcut.rec(i,rec)
@@ -52,52 +70,100 @@ function update_positions(i,x)
     softcut.fade_time(i,fade)
   end
   redraw()
+  -- print(loopStart .. " - " .. loopEnd)
+end
+
+-- INPUT ROUTING
+
+function stereo()
+  -- set softcut to stereo inputs
+  softcut.level_input_cut(1, 1, 1)
+  softcut.level_input_cut(2, 1, 0)
+  softcut.level_input_cut(1, 2, 0)
+  softcut.level_input_cut(2, 2, 1)
+end
+
+function mono()
+  --set softcut to mono input
+  softcut.level_input_cut(1, 1, 1)
+  softcut.level_input_cut(2, 1, 0)
+  softcut.level_input_cut(1, 2, 1)
+  softcut.level_input_cut(2, 2, 0)
+end
+
+function set_input(n)
+  if n == 1 then
+    stereo()
+  else
+    mono()
+  end
 end
 
 -- COMMANDS
 
-function rateP() for i=1,2 do softcut.rate(i,ratesP[math.random(#ratesP)]) end end
-function rateN() for i=1,2 do softcut.rate(i,ratesN[math.random(#ratesN)]) end end
+-- function rateP() params:set("rate12",rates[math.random(5,8)]) end
+function rateP() for i=1,2 do softcut.rate(i,rates[math.random(4,6)]) end end
+function rateN() for i=1,2 do softcut.rate(i,rates[math.random(1,3)]) end end
 function seqPosC() pos = math.random(1,#step) end
 function panC() softcut.pan(1,(math.random(2,5)/10)) ; softcut.pan(2,(math.random(5,8)/10)) end
 function metroDec() m.time = util.clamp(m.time * 2, 0.25,2) end
 function metroInc() m.time = util.clamp(m.time / 2, 0.25,2) end
 function sPosRnd() for i=1,2 do softcut.position(i,1+math.random(loopStart,loopEnd)) end end
 function sPosStart() for i=1,2 do softcut.position(i,loopStart) end end
+function loopRnd() loopStart = math.random(1,loopEnd-1) ; loopEnd = math.random(loopStart+1,loopLength) end
 -- function panR() for i=1,2 do softcut.pan(i,(math.random(2,8)/10)) end end
 
-act = {metroDec,metroInc,seqPosC,rateP,rateN,sPosStart,sPosRnd}
-COMMANDS = 7
-label = {"<", ">", "?", "+", "-", "S", "R"}
-
--- function rate() for i=1,2 do softcut.rate(i,2) end end
--- function posL() pos = math.random(#step) end
+act = {metroDec,metroInc,seqPosC,rateP,rateN,sPosStart,sPosRnd,loopRnd}
+COMMANDS = 8
+label = {"<", ">", "?", "+", "-", "S", "R", "L"}
 
 function init()
-  -- Params
-  params:add_control("REC","REC",controlspec.new(0,1,'lin',0.01,1))
+  
+  -- PARAMS
+  
+  params:add_option("input", "INPUT", {"STEREO", "MONO (L)"}, 1)
+  params:set_action("input", function(x) set_input(x) end)
+  
+  params:add_separator()
+  
+  params:add_control("REC","RECORD LEVEL",controlspec.new(0,1,'lin',0.01,1))
   params:set_action("REC", function(x) rec = x  end)
-  params:add_control("PRE","PRE",controlspec.new(0,1,'lin',0.01,1))
+  params:add_control("PRE","OVERDUB",controlspec.new(0,1,'lin',0.01,1))
   params:set_action("PRE", function(x) pre = x  end)
-  params:add_control("RATE","RATE",controlspec.new(-4,4,'lin',0.5,1))
-  params:set_action("RATE", function(x) rate = x  end)
-  -- params:add_control("LOOP START","LOOP START",controlspec.new(1,loopEnd-2,'lin',1,1))
-  -- params:set_action("LOOP START", function(x) loopStart = x  end)
-  -- params:add_control("LOOP END","LOOP END",controlspec.new(loopStart+2,65,'lin',1,65))
-  -- params:set_action("LOOP END", function(x) loopEnd = x  end)
-  params:add_control("FADE","FADE",controlspec.new(0,1,'lin',0.01,0.1))
+  params:add{id="rate12", name="RATE (COARSE)", type="control",
+    controlspec=controlspec.new(-2,2,'lin',0.5,1,""),
+    action=function(x)
+      softcut.rate(1,x)
+      softcut.rate(2,x)
+    end}
+  params:add_control("LOOP START","LOOP START",controlspec.new(1,loopEnd-1,'lin',1,1))
+  params:set_action("LOOP START", function(x) loopStart = util.clamp(x,1,loopEnd-1) end)
+  params:add_control("LOOP END","LOOP END",controlspec.new(loopStart+1,65,'lin',1,65))
+  params:set_action("LOOP END", function(x) loopEnd = util.clamp(x,loopStart+1,65) end)
+  params:add_control("FADE","FADE",controlspec.new(0,1,'lin',0.01,0.05))
   params:set_action("FADE", function(x) fade = x  end)
+  
   -- send audio input to softcut input + adjust cut volume
+  
+  audio.level_cut(1.0)
   audio.level_adc_cut(1)
-  -- metro
+  audio.level_eng_cut(1)
+  
+  -- METROS
+  
   m = metro.init(count,1,-1)
   m:start()
-  -- position poll
+  mklk:start() -- midi clock out
+  
+  -- POSITION POLL
+  
   softcut.event_phase(update_positions)
   softcut.poll_start_phase()
-	--
+  
+	-- SOFTCUT 
+	
 	softcut.buffer_clear()
-  -- set up 2 voices
+	
   for i=1,2 do
     softcut.enable(i,1)
     softcut.buffer(i,i)
@@ -129,26 +195,33 @@ function init()
     softcut.pre_filter_fc_mod(i,1)
   end
   -- input routing (DOUBLE-CHECK!)
-  if inputs == 2 then
-    softcut.level_input_cut(1,1,1.0)
-    softcut.level_input_cut(2,2,1.0)
-    -- softcut.level_input_cut(2,1,1.0)
-    -- softcut.level_input_cut(1,2,1.0)
-  else
-    softcut.level_input_cut(1,1,1.0)
-    softcut.level_input_cut(1,2,1.0)
-  end
+  
+  stereo()
+  
+  -- softcut.level_input_cut(1,1,1.0)
+  -- softcut.level_input_cut(2,2,1.0)
+  
+  
+  
+  -- if inputs == 2 then
+  --   softcut.level_input_cut(1,1,1.0)
+  --   softcut.level_input_cut(2,2,1.0)
+  --   -- softcut.level_input_cut(2,1,1.0)
+  --   -- softcut.level_input_cut(1,2,1.0)
+  -- else
+  --   softcut.level_input_cut(1,1,1.0)
+  --   softcut.level_input_cut(1,2,1.0)
+  -- end
 end
+
+--------------------------------------------------
 
 function count()
   pos = (pos % #step) + 1
   act[step[pos]]()
-  -- for i=1,2 do
-  --   softcut.pre_level(i,pre)
-  --   softcut.rate_slew_time(i,0.1)
-  --   softcut.rec(i,rec)
-  -- end
   redraw()
+  mklk:clock()
+  -- print(loopStart .. " - " .. loopEnd)
 end
 
 function cutReset()
@@ -174,7 +247,9 @@ function enc(n,d)
     print(pageNum)
   elseif n==2 then
     if KEYDOWN1 == 1 then
-      loopStart = util.clamp(loopStart+d,1,loopEnd)
+      -- loopStart = util.clamp(loopStart+d,1,loopEnd)
+      -- params:delta("LOOP START",util.clamp(d,1,loopEnd-1))
+      params:delta("LOOP START",d)
       print(loopStart)
     else
       if pageNum == 1 then
@@ -187,22 +262,23 @@ function enc(n,d)
     end
   elseif n==3 then
     if KEYDOWN1 == 1 then
-      loopEnd = util.clamp(loopEnd+d,loopStart+1,loopLength+1)
+      -- loopEnd = util.clamp(loopEnd+d,loopStart+1,loopLength+1)
+      -- params:delta("LOOP END",util.clamp(d,loopStart+1,65))
+      params:delta("LOOP END",d)
       print(loopEnd)
     else
       if pageNum == 1 then
         step[edit] = util.clamp(step[edit]+d, 1, COMMANDS)
       elseif pageNum == 2 then
         if sel == 1 then
-          rec = util.clamp(rec+d/100,0,1)
+          params:delta("REC",d)
+          --rec = util.clamp(rec+d/100,0,1)
         elseif sel == 2 then
-          pre = util.clamp(pre+d/100,0,1)
+          params:delta("PRE",d)
+          -- pre = util.clamp(pre+d/100,0,1)
         elseif sel == 3 then
-          fade = util.clamp(fade+d/10,0,1)
-        elseif sel == 4 then
-          last = util.clamp(last+d,1,#ends)
-          loopEnd = ends[last]
-          print(loopEnd)
+          params:delta("FADE",d)
+          --fade = util.clamp(fade+d/10,0,1)
         end
       end
     end
@@ -250,18 +326,18 @@ function key(n,z)
 end
 
 function drawMenu()
-  for i=1,#pages do
-    screen.move(i*4+108,8)
-    screen.line_rel(1,0)
-    if i == pageNum then
-      screen.level(15)
-    else
-      screen.level(1)
-    end
-    screen.stroke()
-  end
+  -- for i=1,#pages do
+  --   screen.move(i*4+108,8)
+  --   screen.line_rel(1,0)
+  --   if i == pageNum then
+  --     screen.level(15)
+  --   else
+  --     screen.level(2)
+  --   end
+  --   screen.stroke()
+  -- end
   screen.move(2,10)
-  screen.level(1)
+  screen.level(2)
   screen.text(pages[pageNum])
 end
 
@@ -269,10 +345,14 @@ function drawEdit()
   screen.move(2,20)
   if rec >= 0.01 then
     screen.level(15)
+    screen.rect(121,6,4,4)
+    screen.fill()
   else
-    screen.level(1)
+    screen.level(2)
   end
-  screen.text("REC")
+  screen.rect(121,6,4,4)
+  screen.stroke()
+  --screen.text("REC")
   drawLoop()
   drawCommands()
 end
@@ -364,13 +444,6 @@ function drawControls()
     screen.text_right(string.format("%.2f",fade))
   end
   screen.move(123,58)
-  if sel == 4 then
-    screen.level(15)
-    screen.text_right(loopEnd-1 .. "s")
-  else
-    screen.level(3)
-    screen.text_right(loopEnd-1 .. "s")
-  end
 end
 
 function redraw()
@@ -379,7 +452,7 @@ function redraw()
   if pageNum == 1 then
     drawEdit()
   elseif pageNum == 2 then
-    drawControls()
+    -- drawControls()
   end
   -- drawCommands()
   -- drawLoop(1)
