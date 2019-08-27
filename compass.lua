@@ -23,7 +23,7 @@ down_time = 0
 KEYDOWN1 = 0
 KEYDOWN2 = 0
 
-pages = {"EDIT", "COMMANDS"}
+pages = {"EDIT", "COMMANDS/SEQUENCE", "COMMANDS/SOFTCUT", "COMMANDS/SOFTCUT"}
 controls = {"REC", "PRE", "FADE"}
 positions = {0,0}
 rates = {-2,-1,-0.5,0.5,1,2}
@@ -120,6 +120,7 @@ function loopRnd() loopStart = math.random(1,loopEnd-1) ; loopEnd = math.random(
 act = {metroDec,metroInc,stepRnd,rateForward,rateReverse,rateInc,rateDec,rateRnd,sPosStart,sPosRnd,loopRnd}
 COMMANDS = 11
 label = {"<", ">", "?", "F", "R", "+", "-", "!", "1", "P", "L"}
+description = {"Increase clock speed", "Decrease clock speed", "Jump to random step", "Forward rate (1x)", "Reverse rate (1x)", "Increase rate", "Decrease rate", "Random rate", "Loop start", "Random position", "Random loop start/end"}
 
 function init()
   
@@ -458,13 +459,61 @@ function drawControls()
   screen.move(123,58)
 end
 
+function drawHelp()
+  if pageNum == 2 then
+    screen.level(2)
+    screen.move(126,10)
+    screen.text_right("1/3")
+    screen.level(15)
+    for i=1,3 do
+      screen.move(2,i*10+16)
+      screen.text(label[i])
+    end
+    screen.level(4)
+    for i=1,3 do
+      screen.move(10,i*10+16)
+      screen.text(description[i])
+    end
+  elseif pageNum == 3 then
+    screen.level(2)
+    screen.move(126,10)
+    screen.text_right("2/3")
+    screen.level(15)
+    screen.level(15)
+    for i=4,7 do
+      screen.move(2,((i-3)*10)+16)
+      screen.text(label[i])
+    end
+    screen.level(4)
+    for i=4,7 do
+      screen.move(10,((i-3)*10)+16)
+      screen.text(description[i])
+    end
+  elseif pageNum == 4 then
+    screen.level(2)
+    screen.move(126,10)
+    screen.text_right("3/3")
+    screen.level(15)
+    screen.level(15)
+    for i=8,11 do
+      screen.move(2,((i-7)*10)+16)
+      screen.text(label[i])
+    end
+    screen.level(4)
+    for i=8,11 do
+      screen.move(10,((i-7)*10)+16)
+      screen.text(description[i])
+    end
+  end
+end
+
 function redraw()
   screen.clear()
   drawMenu()
   if pageNum == 1 then
     drawEdit()
-  elseif pageNum == 2 then
-    -- drawControls()
+  else
+    drawHelp()
   end
   -- drawCommands()
   -- drawLoop(1)
@@ -473,3 +522,43 @@ function redraw()
   screen.update()
 end
 
+-- softcut.buffer_clear()
+--   softcut.enable(1,1)
+--   softcut.buffer(1,1)
+--   softcut.level(1,1.0)
+--   softcut.loop(1,1)
+--   softcut.loop_start(1,1)
+--   softcut.loop_end(1,1.5)
+--   softcut.position(1,1)
+--   softcut.play(1,1)
+--   softcut.level_input_cut(1,1,1.0)
+--   softcut.level_input_cut(2,1,1.0)
+--   softcut.rec_level(1,rec)
+--   softcut.pre_level(1,pre)
+--   softcut.rec(1,1)
+
+--     softcut.enable(i,1)
+--     softcut.buffer(i,1)
+--     softcut.level(i,1)
+--     softcut.loop(i,1)
+--     softcut.loop_start(i,1)
+--     softcut.loop_end(i,1.5)
+--     softcut.position(i,1)
+--     softcut.play(i,1)
+--     softcut.level_input_cut(1,i,1.0)
+--     softcut.level_input_cut(1,i,1.0)
+--     softcut.rec_level(i,rec)
+--     softcut.pre_level(i,pre)
+--     softcut.rec(i,1)
+
+-- screen.move(10,40)
+--   for i=1,#step do
+--     screen.move(i*8,40)
+--     if i == pos then
+--       screen.level(15)
+--     else
+--       screen.level(3)
+--     end
+--     screen.line_rel(5,0)
+--     screen.stroke()
+--   end
