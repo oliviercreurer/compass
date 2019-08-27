@@ -1,6 +1,7 @@
 -- Compass
 
 rate = 1
+ratePos = 5
 rec = 1
 pre = 1
 pos = 1
@@ -17,7 +18,6 @@ sel = 1
 last = 1
 pageNum = 1
 rateSlew = 0.1
--- inputs = 2
 
 down_time = 0
 KEYDOWN1 = 0
@@ -102,21 +102,24 @@ end
 
 -- COMMANDS
 
--- function rateP() params:set("rate12",rates[math.random(5,8)]) end
-function rateP() for i=1,2 do softcut.rate(i,rates[math.random(4,6)]) end end
-function rateN() for i=1,2 do softcut.rate(i,rates[math.random(1,3)]) end end
-function seqPosC() pos = math.random(1,#step) end
-function panC() softcut.pan(1,(math.random(2,5)/10)) ; softcut.pan(2,(math.random(5,8)/10)) end
+-- Sequence
 function metroDec() m.time = util.clamp(m.time * 2, 0.25,2) end
 function metroInc() m.time = util.clamp(m.time / 2, 0.25,2) end
-function sPosRnd() for i=1,2 do softcut.position(i,1+math.random(loopStart,loopEnd)) end end
-function sPosStart() for i=1,2 do softcut.position(i,loopStart) end end
-function loopRnd() loopStart = math.random(1,loopEnd-1) ; loopEnd = math.random(loopStart+1,loopLength) end
--- function panR() for i=1,2 do softcut.pan(i,(math.random(2,8)/10)) end end
+function stepRnd() pos = math.random(1,#step) end
 
-act = {metroDec,metroInc,seqPosC,rateP,rateN,sPosStart,sPosRnd,loopRnd}
-COMMANDS = 8
-label = {"<", ">", "?", "+", "-", "S", "R", "L"}
+-- Softcut
+function rateForward() for i=1,2 do softcut.rate(i,rates[5]) end end
+function rateReverse() for i=1,2 do softcut.rate(i,rates[2]) end end
+function rateInc() ratePos = util.clamp(ratePos+1,1,6) for i=1,2 do softcut.rate(i,rates[ratePos]) end end
+function rateDec() ratePos = util.clamp(ratePos-1,1,6) for i=1,2 do softcut.rate(i,rates[ratePos]) end end
+function rateRnd() for i=1,2 do softcut.rate(i,rates[math.random(1,6)]) end end
+function sPosStart() for i=1,2 do softcut.position(i,loopStart) end end
+function sPosRnd() for i=1,2 do softcut.position(i,1+math.random(loopStart,loopEnd)) end end
+function loopRnd() loopStart = math.random(1,loopEnd-1) ; loopEnd = math.random(loopStart+1,loopLength) end
+
+act = {metroDec,metroInc,stepRnd,rateForward,rateReverse,rateInc,rateDec,rateRnd,sPosStart,sPosRnd,loopRnd}
+COMMANDS = 11
+label = {"<", ">", "?", "F", "R", "+", "-", "!", "1", "P", "L"}
 
 function init()
   
@@ -229,7 +232,7 @@ function count()
   act[step[pos]]()
   redraw()
   mklk:clock()
-  -- print(loopStart .. " - " .. loopEnd)
+  print(ratePos)
 end
 
 function cutReset()
@@ -238,9 +241,9 @@ function cutReset()
     softcut.rate(i,1)
   end
   softcut.buffer_clear()
-  for i=1,#step do
-    step[i] = 1
-  end
+  -- for i=1,#step do
+  --   step[i] = 1
+  -- end
 end
 
 function randomize_steps()
@@ -303,6 +306,7 @@ function key(n,z)
     else
       hold_time = util.time() - down_time
       if hold_time < 1 then
+        ratePos = 5
         for i=1,#step do
           step[i] = 1
         end
@@ -469,43 +473,3 @@ function redraw()
   screen.update()
 end
 
--- softcut.buffer_clear()
---   softcut.enable(1,1)
---   softcut.buffer(1,1)
---   softcut.level(1,1.0)
---   softcut.loop(1,1)
---   softcut.loop_start(1,1)
---   softcut.loop_end(1,1.5)
---   softcut.position(1,1)
---   softcut.play(1,1)
---   softcut.level_input_cut(1,1,1.0)
---   softcut.level_input_cut(2,1,1.0)
---   softcut.rec_level(1,rec)
---   softcut.pre_level(1,pre)
---   softcut.rec(1,1)
-
---     softcut.enable(i,1)
---     softcut.buffer(i,1)
---     softcut.level(i,1)
---     softcut.loop(i,1)
---     softcut.loop_start(i,1)
---     softcut.loop_end(i,1.5)
---     softcut.position(i,1)
---     softcut.play(i,1)
---     softcut.level_input_cut(1,i,1.0)
---     softcut.level_input_cut(1,i,1.0)
---     softcut.rec_level(i,rec)
---     softcut.pre_level(i,pre)
---     softcut.rec(i,1)
-
--- screen.move(10,40)
---   for i=1,#step do
---     screen.move(i*8,40)
---     if i == pos then
---       screen.level(15)
---     else
---       screen.level(3)
---     end
---     screen.line_rel(5,0)
---     screen.stroke()
---   end
