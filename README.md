@@ -41,4 +41,14 @@ Sequence commands:
 
 Softcut commands: 
 
-- `
+- `F` : Set forward (1x) rate 
+- `R` : Set reverse (1x) rate 
+- `+` : Multiply rate (max: 2x)
+- `-` : Decrease rate (max: -2x)
+- `!` : Set a random rate for each record head
+- `1` : Jump both record heads to loop start point
+- `P` : Push each record head to a different position within loop
+
+__*Params*__
+
+
