@@ -6,7 +6,7 @@ __*Input Routing & Recording*__
 
 __Compass__ assumes a stereo source by default. If using a mono source:
 
-- head to Norns' `params` menu and change your input source accordingly
+- head to the system-wide `params` menu once __Compass__ is loaded and change your input source accordingly
 - be sure to plug your source into the _left_ input
 - set proper monitoring in Norns' `system/audio` settings
 
