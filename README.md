@@ -10,7 +10,9 @@ Compass assumes a stereo source by default. If using a mono source:
 - be sure to plug your source into the _left_ input
 - set proper monitoring in Norns' `system/audio` settings
 
-By default, Compass records your audio source into two 64s buffers: one for each voice. Though complexity arises from the relationship between the audio buffers and the command sequencer, as described below, Compass can also be used as a simple looper with an adjustable recording window (1s-64s).  
+By default, Compass records your audio source into two 64s buffers, though a smaller recording window can be set if desired. With a stereo source, each input is paired with a buffer; with a mono source, the input is recorded to both buffers. Stereo effects are then possible with either source type as the record/playback heads for each buffer can be split apart by various commands.
+
+Though complexity arises from the relationship between the audio buffers and the command sequencer, as described below, Compass can also be used as a simple looper with an adjustable recording window (1s-64s).  
 
 __*Sequencing*__
 
