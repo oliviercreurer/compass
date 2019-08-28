@@ -63,6 +63,6 @@ Softcut commands:
 
 † The `+`, `-`, and `!` commands move within a range of pre-set rates: { -2x, -1x, -0.5x, 0.5x, 1x, 2x }
 
-__*Params*__
+__*Additional Parameters*__
 
 Head to Norns' `params` menu for additional script parameters like record and overdub levels, pan positions, rate slew, etc. All params (except for `input`) can be midi-mapped. 
