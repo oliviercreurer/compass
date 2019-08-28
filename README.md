@@ -39,6 +39,8 @@ __*Keys & Encoders*__
 
 __*Commands*__
 
+Commands come in two flavors: those that manipulate the sequence, and those that manipulate recording/looping/playback behavior (i.e. softcut).
+
 Sequence commands:
 
 - `C` : Set clock interval to 1s. 
