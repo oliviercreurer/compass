@@ -20,8 +20,8 @@ Compass' sequencer moves through commands of your choosing that trigger differen
 
 - manipulate the sequence's clock or jump to a random step
 - dynamically change your loop length
-- push the two records heads to different positions in your loop or sync them back up
-- alter the rate and direction of each record head independently
+- push the two record/playback heads to different positions in your loop or sync them back up
+- alter the rate and direction of each record/playback head independently
 - etc.
 
 Compass' audio buffers and its sequencer each have their own sense of time in order to facilitate experimentation.
@@ -59,8 +59,8 @@ Softcut commands:
 - `+` : Increase rate † 
 - `-` : Decrease rate † 
 - `!` : Set a random rate for each record head † 
-- `1` : Send _both_ record heads to loop start point
-- `P` : Send _each_ record head to a different position within loop
+- `1` : Send _both_ record/playback heads to loop _start_ point
+- `P` : Send _each_ record/playback head to a random position within loop
 
 † The `+`, `-`, and `!` commands move within a range of pre-set rates: { -2x, -1x, -0.5x, 0.5x, 1x, 2x }
 
