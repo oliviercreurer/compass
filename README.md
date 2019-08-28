@@ -53,4 +53,4 @@ Softcut commands:
 
 __*Params*__
 
-
+Head to Norns' `params` menu for additional script parameters like rec and overdub levels, pan positions, rate slew, etc. All params (except for `INPUT`) can be midi-mapped. 
