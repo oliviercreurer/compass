@@ -54,13 +54,15 @@ Softcut commands:
 
 - `F` : Set forward (1x) rate 
 - `R` : Set reverse (1x) rate 
-- `+` : Increase rate †
-- `-` : Decrease rate †
-- `!` : Set a random rate for each record head †
+- `+` : Increase rate <sup>[1](#myfootnote1)</sup>
+- `-` : Decrease rate <sup>[1](#myfootnote1)</sup>
+- `!` : Set a random rate for each record head <sup>[1](#myfootnote1)</sup>
 - `1` : Send _both_ record heads to loop start point
 - `P` : Send _each_ record head to a different position within loop
 
-† The `+`, `-`, and `!` commands move within a range of pre-set rates: { -2x, -1x, -0.5x, 0.5x, 1x, 2x }
+<a name="myfootnote1">1</a>: The `+`, `-`, and `!` commands move within a range of pre-set rates: { -2x, -1x, -0.5x, 0.5x, 1x, 2x }
+
+† 
 
 __*Params*__
 
