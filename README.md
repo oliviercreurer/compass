@@ -21,9 +21,24 @@ __*Keys & Encoders*__
 - `E2` : Navigate to step in command row
 - `E3` : Select command at step
 - `K2` (short) : reset command row to default state (does *not* affect softcut buffers)
-- `K2` (long): randomize all commands
+- `K2` (long) : randomize all commands
 - `K3` (short) : toggle recording on/off
-- `K3` (long): clear both softcut buffers (does *not* affect command row)
+- `K3` (long) : clear both softcut buffers (does *not* affect command row)
 - `K1` (hold) + `E1` : set # of steps in sequence (2 - 16)
 - `K1` (hold) + `E2` : set loop start point (can be midi-mapped in `params` menu)
 - `K1` (hold) + `E3` : set loop end point (can be midi-mapped in `params` menu)
+
+__*Commands*__
+
+Sequence commands:
+
+- `C` : Set clock interval to 1s. 
+- `<` : Decrement clock speed (down to 4s.)
+- `>` : Increment clock speed (up to 0.0625s.)
+- `[` : Set clock to slowest speed (4s.)
+- `]` : Set clock to highest speed (0.0625s.)
+- `?` : Jump to random step in sequence
+
+Softcut commands: 
+
+- `
