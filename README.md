@@ -1,6 +1,6 @@
 ## Compass (v1.0)
 
-__Compass__ is a sequencer-based asynchronous looper for Monome Norns. Plug in a mono or stereo source, and then use Compass' built-in sequencer to manipulate recording and looping behaviors. A few commands are also available to manipulate the sequence itself. 
+__Compass__ is a sequencer-based asynchronous looper for Monome Norns. Plug in a mono or stereo source, and then use Compass' built-in sequencer to manipulate recording and looping behaviors along with the sequence itself. 
 
 __*Input Routing & Recording*__
 
@@ -24,4 +24,6 @@ __*Keys & Encoders*__
 - `K2` (long): randomize all commands
 - `K3` (short) : toggle recording on/off
 - `K3` (long): clear both softcut buffers (does *not* affect command row)
-
+- `K1` (hold) + `E1` : set # of steps in sequence (2 - 16)
+- `K1` (hold) + `E2` : set loop start point (can be midi-mapped in `params` menu)
+- `K1` (hold) + `E3` : set loop end point (can be midi-mapped in `params` menu)
