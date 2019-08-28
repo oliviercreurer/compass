@@ -4,17 +4,17 @@ __Compass__ is a sequencer-based asynchronous looper for Monome Norns. Plug in a
 
 __*Input Routing & Recording*__
 
-__Compass__ assumes a stereo source by default. If using a mono source:
+Compass assumes a stereo source by default. If using a mono source:
 
-- head to the system-wide `params` menu once __Compass__ is loaded and change your input source accordingly
+- head to the system-wide `params` menu once Compass is loaded and change your input source accordingly
 - be sure to plug your source into the _left_ input
 - set proper monitoring in Norns' `system/audio` settings
 
-By default, __Compass__ records your audio source into two 64s buffers: one for each voice. Though complexity arises from the relationship between the audio buffers and the command sequencer, as described below, __Compass__ can also be used as a simple looper with an adjustable recording window (1s-64s).  
+By default, Compass records your audio source into two 64s buffers: one for each voice. Though complexity arises from the relationship between the audio buffers and the command sequencer, as described below, Compass can also be used as a simple looper with an adjustable recording window (1s-64s).  
 
 __*Sequencing*__
 
-__Compass'__ audio buffers and its sequencer each have their own sense of time in order to facilitate experimentation. Use the command row on the `EDIT` page to, for example:
+Compass' audio buffers and its sequencer each have their own sense of time in order to facilitate experimentation. Use the command row on the `EDIT` page to, for example:
 
 - create wild timing fluctuations in your sequence
 - dynamically change your loop length
