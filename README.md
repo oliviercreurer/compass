@@ -12,7 +12,9 @@ Compass assumes a stereo source by default. If using a mono source:
 
 By default, Compass records your audio source into two 64s buffers, though a smaller recording window can be set if desired. With a stereo source, each input is paired with a buffer; with a mono source, the input is recorded to both buffers. Stereo effects are then possible with either source type as the record/playback heads for each buffer can be split apart by various commands.
 
-Though complexity arises from the relationship between the audio buffers and the command sequencer, as described below, Compass can also be used as a simple looper with an adjustable recording window (1s-64s).  
+Though complexity arises from the relationship between the audio buffers and the command sequencer, as described below, Compass can also be used as a simple looper with an adjustable recording window (1s-64s). 
+
+-----
 
 __*Sequencing*__
 
@@ -24,6 +26,8 @@ Compass' sequencer moves through commands of your choosing that trigger differen
 - alter the rate and direction of each record/playback head independently
 
 Compass' audio buffers and its sequencer each have their own sense of time in order to facilitate experimentation.
+
+-----
 
 __*Keys & Encoders*__
 
@@ -37,6 +41,8 @@ __*Keys & Encoders*__
 - `K1` (hold) + `E1` : set # of steps in sequence (2 - 16)
 - `K1` (hold) + `E2` : set loop start point (can be midi-mapped in `params` menu)
 - `K1` (hold) + `E3` : set loop end point (can be midi-mapped in `params` menu)
+
+-----
 
 __*Commands*__
 
@@ -62,6 +68,8 @@ Softcut commands:
 - `P` : Send _each_ record/playback head to a random position within loop
 
 † The `+`, `-`, and `!` commands move within a range of pre-set rates: { -2x, -1x, -0.5x, 0.5x, 1x, 2x }
+
+-----
 
 __*Additional Parameters*__
 
