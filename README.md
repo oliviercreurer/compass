@@ -16,13 +16,12 @@ Though complexity arises from the relationship between the audio buffers and the
 
 __*Sequencing*__
 
-Compass' sequencer moves through commands of your choosing that trigger different functions. Use commands to:
+Compass' sequencer moves through commands of your choosing that trigger different functions. Use commands to, for example:
 
 - manipulate the sequence's clock or jump to a random step
 - dynamically change your loop length
 - push the two record/playback heads to different positions in your loop or sync them back up
 - alter the rate and direction of each record/playback head independently
-- etc.
 
 Compass' audio buffers and its sequencer each have their own sense of time in order to facilitate experimentation.
 
