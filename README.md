@@ -6,6 +6,8 @@ __*Input Routing & Recording*__
 
 Once the script is loaded, head to Norns' `params` menu to select your input source type (mono or stereo). If using a mono source, be sure to plug it into the left input. Set proper monitoring in the `system/audio` settings as well. By default, __Compass__ records your audio source into two 64s buffers: one for each voice. 
 
+Though complexity arises from the relationship between the audio buffers and the command sequencer, __Compass__ can also be used as a simple asynchronous looper with an adjustable recording window (1s-64s).  
+
 __*Sequencing*__
 
 __Compass'__ audio buffers and its sequencer each have their own sense of time in order to facilitate experimentation. Use the command row on the `EDIT` page to, for example:
