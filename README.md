@@ -14,12 +14,15 @@ By default, Compass records your audio source into two 64s buffers: one for each
 
 __*Sequencing*__
 
-Compass' audio buffers and its sequencer each have their own sense of time in order to facilitate experimentation. Use the command row on the `EDIT` page to, for example:
+Compass' sequencer moves through commands of your choosing that trigger different functions. Use commands to:
 
-- create wild timing fluctuations in your sequence
+- manipulate the sequence's clock or jump to a random step
 - dynamically change your loop length
-- push the two records heads to different positions in your loop or sync them back up. 
-- alter the rate and direction of each record head
+- push the two records heads to different positions in your loop or sync them back up
+- alter the rate and direction of each record head independently
+- etc.
+
+Compass' audio buffers and its sequencer each have their own sense of time in order to facilitate experimentation.
 
 __*Keys & Encoders*__
 
