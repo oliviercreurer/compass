@@ -48,7 +48,7 @@ __*Keys & Encoders*__
 
 __*Commands*__
 
-Commands come in two flavors: those that manipulate the sequence, and those that manipulate recording/looping/playback behavior (i.e. softcut).
+Commands come in two flavors: those that manipulate the sequence, and those that manipulate recording/looping/playback behaviors (i.e. softcut).
 
 Sequence commands:
 
