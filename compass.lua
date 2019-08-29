@@ -11,7 +11,7 @@
 -- K2(long): Randomize commands
 -- K3(short): Rec ON/OFF
 -- K3(long): Clear buffers
--- K1(hold) + E1 : # of steps
+-- K1(hold) + E1 : sequence length
 -- K1(hold) + E2 : set loop start
 -- K1(hold) + E3 : set loop end
 
