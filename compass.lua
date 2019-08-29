@@ -1,36 +1,35 @@
 -- Compass
 
-rate = 1
-ratePos = 5
-rec = 1
-pre = 1
-pos = 1
-edit = 1
+local rate = 1
+local ratePos = 5
+local rec = 1
+local pre = 1
+local pos = 1
+local edit = 1
+local direction = 0
 
-loopStart = 1
-loopEnd = 65
-loopLength = 64
+local loopStart = 1
+local loopEnd = 65
+local loopLength = 64
 
-fade = 0.05
-panL = 0.3
-panR = 0.7
-sel = 1
-last = 1
-pageNum = 1
-rateSlew = 0.1
+local fade = 0.05
+local panL = 0.3
+local panR = 0.7
+-- sel = 1
+local last = 1
+local pageNum = 1
+local rateSlew = 0.1
 
-down_time = 0
-KEYDOWN1 = 0
-KEYDOWN2 = 0
+local down_time = 0
+local KEYDOWN1 = 0
+local KEYDOWN2 = 0
 
-pages = {"EDIT", "COMMANDS/SEQUENCE", "COMMANDS/SEQUENCE", "COMMANDS/SOFTCUT", "COMMANDS/SOFTCUT"}
-controls = {"REC", "PRE", "FADE"}
+local pages = {"EDIT", "COMMANDS/SEQUENCE", "COMMANDS/SEQUENCE", "COMMANDS/SOFTCUT", "COMMANDS/SOFTCUT"}
 positions = {0,0}
 rates = {-2,-1,-0.5,0.5,1,2}
--- ends = {5,9,17,33,65}
 
-STEPS = 16
-step = {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}
+local STEPS = 16
+local step = {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}
 
 function update_positions(i,x)
   redraw()
@@ -91,6 +90,7 @@ function metroTop() m.time = 0.0624 end
 function metroBottom() m.time = 4 end
 function stepRnd() pos = math.random(1,#step) end
 
+
 -- Softcut
 function rateForward() for i=1,2 do softcut.rate(i,rates[5]) end end
 function rateReverse() for i=1,2 do softcut.rate(i,rates[2]) end end
@@ -101,10 +101,10 @@ function sPosStart() for i=1,2 do softcut.position(i,loopStart) end end
 function sPosRnd() for i=1,2 do softcut.position(i,1+math.random(loopStart,loopEnd)) end end
 function loopRnd() loopStart = math.random(1,loopEnd-1) ; loopEnd = math.random(loopStart+1,loopLength) end
 
-act = {metroSteady,metroDec,metroInc,metroBottom,metroTop,stepRnd,rateForward,rateReverse,rateInc,rateDec,rateRnd,sPosStart,sPosRnd,loopRnd}
-COMMANDS = 14
-label = {"C", "<", ">", "[", "]", "?", "F", "R", "+", "-", "!", "1", "P", "L"}
-description = {"- Steady clock (1s)", "- Decrease clock speed", "- Increase clock speed", "- Bottom speed", "- Top speed", "- Jump to random step", "- Forward rate (1x)", "- Reverse rate (1x)", "- Increase rate", "- Decrease rate", "- Random rate", "- Loop start", "- Random position", "- Random loop start/end"}
+local act = {metroSteady,metroDec,metroInc,metroBottom,metroTop,stepRnd,rateForward,rateReverse,rateInc,rateDec,rateRnd,sPosStart,sPosRnd,loopRnd}
+local COMMANDS = 14
+local label = {"C", "<", ">", "[", "]", "?", "F", "R", "+", "-", "!", "1", "P", "L"}
+local description = {"- Steady clock (1s)", "- Decrease clock speed", "- Increase clock speed", "- Bottom speed", "- Top speed", "- Jump to random step", "- Forward rate (1x)", "- Reverse rate (1x)", "- Increase rate", "- Decrease rate", "- Random rate", "- Loop start", "- Random position", "- Random loop start/end"}
 
 function init()
   
@@ -232,9 +232,9 @@ function enc(n,d)
       if pageNum == 1 then
         edit = util.clamp(edit+d,1,#step)
         print(edit)
-      elseif pageNum == 2 then
-        sel = util.clamp(sel+d,1,#controls)
-        print(sel)
+      -- elseif pageNum == 2 then
+      --   sel = util.clamp(sel+d,1,#controls)
+      --   print(sel)
       end
     end
   elseif n==3 then
@@ -361,43 +361,6 @@ function drawLoop()
   screen.move((positions[2]-1)*(124/(loopLength))+2,(2*9)+25)
   screen.line_rel(0,3)
   screen.stroke()
-end
-
-function drawControls()
-  for i=1,#controls do
-    screen.move(2,i*10+18)
-    if i == sel then
-      screen.level(15)
-    else
-      screen.level(3)
-    end
-    screen.text(controls[i])
-  end
-  screen.move(123,28)
-  if sel == 1 then
-    screen.level(15)
-    screen.text_right(string.format("%.2f",rec))
-  else
-    screen.level(3)
-    screen.text_right(string.format("%.2f",rec))
-  end
-  screen.move(123,38)
-  if sel == 2 then
-    screen.level(15)
-    screen.text_right(string.format("%.2f",pre))
-  else
-    screen.level(3)
-    screen.text_right(string.format("%.2f",pre))
-  end
-  screen.move(123,48)
-  if sel == 3 then
-    screen.level(15)
-    screen.text_right(string.format("%.2f",fade))
-  else
-    screen.level(3)
-    screen.text_right(string.format("%.2f",fade))
-  end
-  screen.move(123,58)
 end
 
 function drawHelp()
