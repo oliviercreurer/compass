@@ -1,7 +1,19 @@
+--
 -- Compass (v1.0)
 -- Command-based looper
 -- @olivier
 -- https://???
+--
+-- E1: Scroll pages
+-- E2: Navigate to step
+-- E3: Select command
+-- K2(short): Reset commands
+-- K2(long): Randomize commands
+-- K3(short): Rec ON/OFF
+-- K3(long): Clear buffers
+-- K1(hold) + E1 : # of steps
+-- K1(hold) + E2 : set loop start
+-- K1(hold) + E3 : set loop end
 
 local rate = 1
 local ratePos = 5
