@@ -27,7 +27,7 @@ Compass' sequencer moves through commands of your choosing that trigger differen
 - push the two record/playback heads to different positions in your loop or sync them back up
 - alter the rate and direction of each record/playback head independently
 
-Compass' audio buffers and its sequencer each have their own sense of time in order to facilitate experimentation.
+Compass' audio buffers and its sequencer each have their own sense of time in order to facilitate experimentation. Interesting effects and textures can be created by recording into loops long and short, randomizing commands on the fly, modifying the sequence length, etc.
 
 -----
 
