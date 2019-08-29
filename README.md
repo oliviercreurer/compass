@@ -2,6 +2,8 @@
 
 __Compass__ is an experimental, asynchronous looper for Monome Norns. Plug in a mono or stereo source, then use Compass' built-in command sequencer to manipulate recording/looping/playback behaviors and the sequence itself. 
 
+-----
+
 __*Input Routing & Recording*__
 
 Compass assumes a stereo source by default. If using a mono source:
