@@ -1,12 +1,15 @@
--- Compass
+-- Compass (v1.0)
+-- Command-based looper
+-- @olivier
+-- https://???
 
 local rate = 1
 local ratePos = 5
 local rec = 1
+local recLevel = 1
 local pre = 1
 local pos = 1
 local edit = 1
-local direction = 0
 
 local loopStart = 1
 local loopEnd = 65
@@ -15,7 +18,6 @@ local loopLength = 64
 local fade = 0.05
 local panL = 0.3
 local panR = 0.7
--- sel = 1
 local last = 1
 local pageNum = 1
 local rateSlew = 0.1
@@ -25,8 +27,8 @@ local KEYDOWN1 = 0
 local KEYDOWN2 = 0
 
 local pages = {"EDIT", "COMMANDS/SEQUENCE", "COMMANDS/SEQUENCE", "COMMANDS/SOFTCUT", "COMMANDS/SOFTCUT"}
-positions = {0,0}
-rates = {-2,-1,-0.5,0.5,1,2}
+local positions = {0,0}
+local rates = {-2,-1,-0.5,0.5,1,2}
 
 local STEPS = 16
 local step = {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}
@@ -116,7 +118,7 @@ function init()
   params:add_separator()
   
   params:add_control("REC","RECORD LEVEL",controlspec.new(0,1,'lin',0.01,1))
-  params:set_action("REC", function(x) rec = x  end)
+  params:set_action("REC", function(x) for i=1,2 do softcut.rec_level(i,x) end  end)
   params:add_control("PRE","OVERDUB",controlspec.new(0,1,'lin',0.01,1))
   params:set_action("PRE", function(x) pre = x  end)
   params:add{id="rate12", name="RATE (COARSE)", type="control",
@@ -162,6 +164,7 @@ function init()
     softcut.enable(i,1)
     softcut.buffer(i,i)
     softcut.level(i,1.0)
+    softcut.rec_level(i,recLevel)
     softcut.loop(i,1)
     softcut.loop_start(i,1)
     softcut.loop_end(i,loopEnd)
@@ -178,16 +181,16 @@ function init()
     softcut.rate_slew_time(i,rateSlew)
   end
   -- set PRE filter
-  for i=1,2 do
-    softcut.pre_filter_dry(i,0)
-    softcut.pre_filter_lp(i,1)
-    softcut.pre_filter_hp(i,0)
-    softcut.pre_filter_bp(i,0)
-    softcut.pre_filter_br(i,0)
-    softcut.pre_filter_fc(i,18000)
-    softcut.pre_filter_rq(i,5)
-    softcut.pre_filter_fc_mod(i,1)
-  end
+  -- for i=1,2 do
+  --   softcut.pre_filter_dry(i,0)
+  --   softcut.pre_filter_lp(i,1)
+  --   softcut.pre_filter_hp(i,0)
+  --   softcut.pre_filter_bp(i,0)
+  --   softcut.pre_filter_br(i,0)
+  --   softcut.pre_filter_fc(i,18000)
+  --   softcut.pre_filter_rq(i,5)
+  --   softcut.pre_filter_fc_mod(i,1)
+  -- end
   
   stereo()
   
