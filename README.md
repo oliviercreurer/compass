@@ -29,6 +29,8 @@ Compass' sequencer moves through commands of your choosing that trigger differen
 
 Compass' audio buffers and its sequencer each have their own sense of time in order to facilitate experimentation. Interesting effects and textures can be created by recording into loops long and short, randomizing commands on the fly, modifying the sequence length, etc.
 
+The buffers are purposefully long to allow traveling to different windows within them during recording and playback. Sounds can thus be recorded and returned to in dynamic, unexpected ways as the two recorded/playback heads are independently modulated. 
+
 -----
 
 __*Keys & Encoders*__
