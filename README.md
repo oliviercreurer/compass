@@ -23,7 +23,7 @@ __*Sequencing*__
 Compass' sequencer moves through commands of your choosing that trigger different functions. Use commands to, for example:
 
 - manipulate the sequence's clock or jump to a random step
-- dynamically change your loop length
+- randomly change the position of your loop
 - push the two record/playback heads to different positions in your loop or sync them back up
 - alter the rate and direction of each record/playback head independently
 
