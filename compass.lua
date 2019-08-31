@@ -152,9 +152,17 @@ function init()
   params:add_control("LOOP END","LOOP END",controlspec.new(loopStart+1,65,'lin',1,65))
   params:set_action("LOOP END", function(x) loopEnd = util.clamp(x,loopStart+1,65) end)
   
+  params:add_separator()
+  
+  params:add_control("CUT_LEVEL", "CUT LEVEL", controlspec.new(0,1,'lin',0.01,1))
+  params:set_action("CUT_LEVEL", function(x) audio.level_cut(x) end)
+  params:add_control("IN_LEVEL", "INPUT LEVEL", controlspec.new(0,1,'lin',0.01,1))
+  params:set_action("IN_LEVEL", function(x) audio.level_adc(x) end)
+
+  
   -- send audio input to softcut input + adjust cut volume
   
-  audio.level_cut(1.0)
+  audio.level_cut(1)
   audio.level_adc_cut(1)
   audio.level_eng_cut(1)
   
@@ -193,16 +201,16 @@ function init()
     softcut.rate_slew_time(i,rateSlew)
   end
   -- set PRE filter
-  -- for i=1,2 do
-  --   softcut.pre_filter_dry(i,0)
-  --   softcut.pre_filter_lp(i,1)
-  --   softcut.pre_filter_hp(i,0)
-  --   softcut.pre_filter_bp(i,0)
-  --   softcut.pre_filter_br(i,0)
-  --   softcut.pre_filter_fc(i,18000)
-  --   softcut.pre_filter_rq(i,5)
-  --   softcut.pre_filter_fc_mod(i,1)
-  -- end
+  for i=1,2 do
+    softcut.pre_filter_dry(i,0)
+    softcut.pre_filter_lp(i,1)
+    softcut.pre_filter_hp(i,0)
+    softcut.pre_filter_bp(i,0)
+    softcut.pre_filter_br(i,0)
+    softcut.pre_filter_fc(i,18000)
+    softcut.pre_filter_rq(i,5)
+    softcut.pre_filter_fc_mod(i,1)
+  end
   
   stereo()
   
