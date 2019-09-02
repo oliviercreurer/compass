@@ -2,7 +2,7 @@
 -- Compass (v1.0)
 -- Command-based looper
 -- @olivier
--- https://???
+-- https://llllllll.co/t/compass/25192
 --
 -- E1: Scroll pages
 -- E2: Navigate to step
