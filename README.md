@@ -76,4 +76,19 @@ Softcut commands:
 
 __*Additional Parameters*__
 
-Head to Norns' `params` menu for additional script parameters like record and overdub levels, pan positions, rate slew, etc. All params (except for `input`) can be midi-mapped. 
+Head to Norns' `params` menu for these additional parameters: 
+
+- `INPUT` (Stereo or Mono)
+- `RECORD LEVEL` (0 - 1)
+- `OVERDUB` (0 - 1)
+- `RATE` (-2 - 2, in 0.25 increments)
+- `RATE SLEW` (0s - 2s)
+- `FADE` (0s - 1s ; adjust crossfade when changing position)
+- `PAN(R)` (0 - 1)
+- `PAN(L)` (0 - 1)
+- `LOOP START`
+- `LOOP END`
+- `CUT LEVEL` (0 - 1)
+- `INPUT LEVEL` (0 - 1)
+
+All parameters can be midi-mapped, with the exception of `INPUT`. 
