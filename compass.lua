@@ -88,6 +88,16 @@ function set_input(n)
   end
 end
 
+
+local function load_sample(file)
+  -- loads samples into buffers
+  for i = 1, 2 do
+    softcut.buffer_clear()
+    softcut.buffer_read_mono(file, 0, 1, -1, i, i)
+  end
+end
+
+
 -- SEQUENCE LENGTH
 
 function setn(t,n)
@@ -126,6 +136,9 @@ function init()
   
   params:add_option("input", "INPUT", {"STEREO", "MONO (L)"}, 1)
   params:set_action("input", function(x) set_input(x) end)
+  -- load a sample
+  params:add_file("sample", "SAMPLE")
+  params:set_action("sample", function(file) load_sample(file) end)
   
   params:add_separator()
   
@@ -231,6 +244,7 @@ function cutReset()
     softcut.rate(i,1)
   end
   softcut.buffer_clear()
+  params:set("sample", "-")
 end
 
 function randomize_steps()
