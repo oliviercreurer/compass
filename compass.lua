@@ -45,7 +45,7 @@ local rates = {-2,-1,-0.5,0.5,1,2}
 local STEPS = 16
 local step = {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}
 
-local Arcify = include("arcify/lib/arcify")
+local Arcify = include("lib/arcify")
 local arcify = Arcify.new()
 
 function update_positions(i,x)
