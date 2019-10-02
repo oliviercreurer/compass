@@ -1,5 +1,5 @@
 --
--- Compass (v1.0)
+-- Compass (v1.1)
 -- Command-based looper
 -- @olivier
 -- https://llllllll.co/t/compass/25192
@@ -17,7 +17,7 @@
 
 local rate = 1
 local ratePos = 5
-local rec = 1
+local rec = 0
 local recLevel = 1
 local pre = 1
 local pos = 1
@@ -28,8 +28,8 @@ local loopEnd = 65
 local loopLength = 64
 
 local fade = 0.05
-local panL = 0.3
-local panR = 0.7
+local panL = -0.5
+local panR = 0.5
 local last = 1
 local pageNum = 1
 local rateSlew = 0.1
@@ -38,7 +38,7 @@ local down_time = 0
 local KEYDOWN1 = 0
 local KEYDOWN2 = 0
 
-local pages = {"EDIT", "COMMANDS/SEQUENCE", "COMMANDS/SEQUENCE", "COMMANDS/SOFTCUT", "COMMANDS/SOFTCUT"}
+local pages = {"EDIT", "COMMANDS/SEQUENCE", "COMMANDS/SEQUENCE", "COMMANDS/SOFTCUT", "COMMANDS/SOFTCUT", "COMMANDS/SOFTCUT"}
 local positions = {0,0}
 local rates = {-2,-1,-0.5,0.5,1,2}
 
@@ -117,53 +117,57 @@ function rateRnd() for i=1,2 do softcut.rate(i,rates[math.random(1,6)]) end end
 function sPosStart() for i=1,2 do softcut.position(i,loopStart) end end
 function sPosRnd() for i=1,2 do softcut.position(i,1+math.random(loopStart,loopEnd)) end end
 function loopRnd() loopStart = math.random(1,loopEnd-1) ; loopEnd = math.random(loopStart+1,loopLength) end
+function rndPanL() panL = math.random(0,9)/-10 end
+function rndPanR() panR = math.random(0,9)/10 end
 
-local act = {metroSteady,metroDec,metroInc,metroBottom,metroTop,stepRnd,rateForward,rateReverse,rateInc,rateDec,rateRnd,sPosStart,sPosRnd,loopRnd}
-local COMMANDS = 14
-local label = {"C", "<", ">", "[", "]", "?", "F", "R", "+", "-", "!", "1", "P", "L"}
-local description = {"- Steady clock (1s)", "- Decrease clock speed", "- Increase clock speed", "- Bottom speed", "- Top speed", "- Jump to random step", "- Forward rate (1x)", "- Reverse rate (1x)", "- Increase rate", "- Decrease rate", "- Random rate", "- Loop start", "- Random position", "- Random loop start/end"}
+local act = {metroSteady,metroDec,metroInc,metroBottom,metroTop,stepRnd,rateForward,rateReverse,rateInc,rateDec,rateRnd,sPosStart,sPosRnd,loopRnd,rndPanL,rndPanR}
+local COMMANDS = 16
+local label = {"C", "<", ">", "[", "]", "?", "F", "R", "+", "-", "!", "1", "P", "L", "(", ")"}
+local description = {"- Steady clock (1s)", "- Decrease clock speed", "- Increase clock speed", "- Bottom speed", "- Top speed", "- Jump to random step", "- Forward rate (1x)", "- Reverse rate (1x)", "- Increase rate", "- Decrease rate", "- Random rate", "- Loop start", "- Random position", "- Random loop start/end", "- Random pan pos (L)", "- Random pan pos (R)"}
 
 function init()
   
   -- PARAMS
   
-  params:add_option("input", "INPUT", {"STEREO", "MONO (L)"}, 1)
+  params:add_option("input", "Input", {"Stereo", "Mono (L)"}, 1)
   params:set_action("input", function(x) set_input(x) end)
   
   params:add_separator()
   
-  params:add_control("REC","RECORD LEVEL",controlspec.new(0,1,'lin',0.01,1))
+  params:add_control("REC","Record level",controlspec.new(0,1,'lin',0.01,1))
   params:set_action("REC", function(x) for i=1,2 do softcut.rec_level(i,x) end  end)
-  params:add_control("PRE","OVERDUB",controlspec.new(0,1,'lin',0.01,1))
+  params:add_control("PRE","Overdub",controlspec.new(0,1,'lin',0.01,1))
   params:set_action("PRE", function(x) pre = x  end)
-  params:add{id="rate12", name="RATE (COARSE)", type="control",
+  params:add{id="rate12", name="Rate (coarse)", type="control",
     controlspec=controlspec.new(-2,2,'lin',0.25,1,""),
     action=function(x)
       softcut.rate(1,x)
       softcut.rate(2,x)
     end}
-  params:add_control("RATE_SLEW", "RATE (SLEW)", controlspec.new(0,2,'lin',0.01,0.1))
+  params:add_control("RATE_SLEW", "Rate (slew)", controlspec.new(0,2,'lin',0.01,0.1))
   params:set_action("RATE_SLEW", function(x) rateSlew = x end)
-  params:add_control("FADE","FADE",controlspec.new(0,1,'lin',0.01,0.05))
+  params:add_control("FADE","Fade",controlspec.new(0,1,'lin',0.01,0.05))
   params:set_action("FADE", function(x) fade = x  end)
-  params:add_control("PAN_R", "PAN(R)", controlspec.new(0,1,'lin',0.05,0.7))
+  params:add_control("PAN_R", "Pan (R)", controlspec.new(-1,1,'lin',0.01,0.5))
   params:set_action("PAN_R", function(x) panR = x end)
-  params:add_control("PAN_L", "PAN(L)", controlspec.new(0,1,'lin',0.05,0.3))
+  params:add_control("PAN_L", "Pan (L)", controlspec.new(-1,1,'lin',0.01,-0.5))
   params:set_action("PAN_L", function(x) panL = x end)
-  params:add_control("LOOP START","LOOP START",controlspec.new(1,loopEnd-1,'lin',1,1))
+  params:add_control("PAN_SLEW", "Pan (slew)", controlspec.new(0,2,'lin', 0.01,0.25))
+  params:set_action("PAN_SLEW", function(x) for i=1,2 do softcut.pan_slew_time(i,x) end end)
+  params:add_control("LOOP START","Loop Start",controlspec.new(1,loopEnd-1,'lin',1,1))
   params:set_action("LOOP START", function(x) loopStart = util.clamp(x,1,loopEnd-1) end)
-  params:add_control("LOOP END","LOOP END",controlspec.new(loopStart+1,65,'lin',1,65))
+  params:add_control("LOOP END","Loop End",controlspec.new(loopStart+1,65,'lin',1,65))
   params:set_action("LOOP END", function(x) loopEnd = util.clamp(x,loopStart+1,65) end)
   
   params:add_separator()
   
-  params:add_control("CUT_LEVEL", "CUT LEVEL", controlspec.new(0,1,'lin',0.01,1))
+  params:add_control("CUT_LEVEL", "Cut level", controlspec.new(0,1,'lin',0.01,1))
   params:set_action("CUT_LEVEL", function(x) audio.level_cut(x) end)
-  params:add_control("IN_LEVEL", "INPUT LEVEL", controlspec.new(0,1,'lin',0.01,1))
+  params:add_control("IN_LEVEL", "Input level", controlspec.new(0,1,'lin',0.01,1))
   params:set_action("IN_LEVEL", function(x) audio.level_adc(x) end)
 
   -- Arc control over loop start & end 
-  params:add_separator()
+  -- params:add_separator()
   arcify:register("LOOP START",1)
   arcify:register("LOOP END",1)
   arcify:add_params()
@@ -199,7 +203,7 @@ function init()
     softcut.position(i,1)
     softcut.play(i,1)
     softcut.fade_time(i,fade)
-    softcut.rec_level(i,rec)
+    softcut.rec_level(i,1)
     softcut.pre_level(i,pre)
     softcut.rec(i,1)
     softcut.pan(1,panR)
@@ -398,7 +402,7 @@ function drawHelp()
   if pageNum == 2 then
     screen.level(2)
     screen.move(126,10)
-    screen.text_right("1/4")
+    screen.text_right("1/5")
     screen.level(15)
     for i=1,3 do
       screen.move(2,i*10+16)
@@ -412,7 +416,7 @@ function drawHelp()
   elseif pageNum == 3 then
     screen.level(2)
     screen.move(126,10)
-    screen.text_right("2/4")
+    screen.text_right("2/5")
     screen.level(15)
     screen.level(15)
     for i=4,6 do
@@ -427,7 +431,7 @@ function drawHelp()
   elseif pageNum == 4 then
     screen.level(2)
     screen.move(126,10)
-    screen.text_right("3/4")
+    screen.text_right("3/5")
     screen.level(15)
     screen.level(15)
     for i=7,10 do
@@ -442,7 +446,7 @@ function drawHelp()
   elseif pageNum == 5 then
     screen.level(2)
     screen.move(126,10)
-    screen.text_right("4/4")
+    screen.text_right("4/5")
     screen.level(15)
     screen.level(15)
     for i=11,14 do
@@ -452,6 +456,20 @@ function drawHelp()
     screen.level(4)
     for i=11,14 do
       screen.move(10,((i-10)*10)+16)
+      screen.text(description[i])
+    end
+  elseif pageNum == 6 then
+    screen.level(2)
+    screen.move(126,10)
+    screen.text_right("5/5")
+    screen.level(15)
+    for i=15,16 do
+      screen.move(2,((i-14)*10)+16)
+      screen.text(label[i])
+    end
+    screen.level(4)
+    for i=15,16 do
+      screen.move(10,((i-14)*10)+16)
       screen.text(description[i])
     end
   end
