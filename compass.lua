@@ -45,6 +45,9 @@ local rates = {-2,-1,-0.5,0.5,1,2}
 local STEPS = 16
 local step = {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}
 
+local Arcify = include("lib/arcify")
+local arcify = Arcify.new()
+
 function update_positions(i,x)
   redraw()
   positions[i] = util.clamp(x,0.1,loopEnd)
@@ -159,6 +162,11 @@ function init()
   params:add_control("IN_LEVEL", "INPUT LEVEL", controlspec.new(0,1,'lin',0.01,1))
   params:set_action("IN_LEVEL", function(x) audio.level_adc(x) end)
 
+  -- Arc control over loop start & end 
+  params:add_separator()
+  arcify:register("LOOP START",1)
+  arcify:register("LOOP END",1)
+  arcify:add_params()
   
   -- send audio input to softcut input + adjust cut volume
   
@@ -222,7 +230,7 @@ function count()
   pos = (pos % #step) + 1
   act[step[pos]]()
   redraw()
-  print(ratePos)
+  --print("ratePos " .. ratePos)
 end
 
 function cutReset()
@@ -243,18 +251,18 @@ function enc(n,d)
   if n==1 then
     if KEYDOWN1 == 1 then
       STEPS = util.clamp(STEPS+d,2,16)
-      print(STEPS)
+      print("Steps " .. STEPS)
     else 
       pageNum = util.clamp(pageNum+d,1,#pages)
     end
   elseif n==2 then
     if KEYDOWN1 == 1 then
       params:delta("LOOP START",d)
-      print(loopStart)
+      print("loop start " .. loopStart)
     else
       if pageNum == 1 then
         edit = util.clamp(edit+d,1,#step)
-        print(edit)
+        print("edit " .. edit)
       -- elseif pageNum == 2 then
       --   sel = util.clamp(sel+d,1,#controls)
       --   print(sel)
@@ -263,7 +271,7 @@ function enc(n,d)
   elseif n==3 then
     if KEYDOWN1 == 1 then
       params:delta("LOOP END",d)
-      print(loopEnd)
+      print("loop end " .. loopEnd)
     else
       if pageNum == 1 then
         step[edit] = util.clamp(step[edit]+d, 1, COMMANDS)
