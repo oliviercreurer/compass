@@ -69,6 +69,8 @@ Softcut commands:
 - `!` : Set a random rate for each record head † 
 - `1` : Send _both_ record/playback heads to loop _start_ point
 - `P` : Send _each_ record/playback head to a random position within loop
+- `(` : Randomly change pan position (L)
+- `)` : Randomly change pan position (R)
 
 † The `+`, `-`, and `!` commands move within a range of pre-set rates: { -2x, -1x, -0.5x, 0.5x, 1x, 2x }
 
@@ -90,5 +92,6 @@ Head to Norns' `params` menu for these additional parameters:
 - `LOOP END`
 - `CUT LEVEL` (0 - 1)
 - `INPUT LEVEL` (0 - 1)
+- `ARCIFY PARAMS`
 
 All parameters can be midi-mapped, with the exception of `INPUT`. 
