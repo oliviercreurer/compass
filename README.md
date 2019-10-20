@@ -104,7 +104,7 @@ Head to Norns' `params` menu for these additional parameters:
 
 - `INPUT` (Stereo or Mono)
 - `CLOCK` (Internal or Crow in 1)
-- `CROW IN 2` (Off, Softcut Level, Softcut Rate -- see [crow](#crow) section below for details)
+- `CROW IN 2` (see [crow](#crow) section below for details)
 - `RECORD LEVEL` (0 - 1)
 - `OVERDUB` (0 - 1)
 - `RATE` (-2 - 2, in 0.25 increments)
