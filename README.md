@@ -68,8 +68,8 @@ Softcut commands:
 
 - `F` : Set forward (1x) rate 
 - `R` : Set reverse (1x) rate 
-- `+` : Increase rate <sup>2</sup>
-- `-` : Decrease rate <sup>2</sup>
+- `+` : Random forward rate (0.5x - 2x) <sup>2</sup>
+- `-` : Random reverse rate (-2x - -0.5x) <sup>2</sup>
 - `!` : Set a random rate for each record head <sup>2</sup> 
 - `1` : Send _both_ record/playback heads to loop _start_ point
 - `P` : Send _each_ record/playback head to a random position within loop
