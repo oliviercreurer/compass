@@ -3,6 +3,11 @@
 __Compass__ is an asynchronous looper for Monome Norns built around the concept of a command sequencer. Commands (assigned per step in the bottom row of the `EDIT` page) modulate sequence, recording, playback and looping behaviors. 
 
 [Input Routing & Recording](#input-routing-and-recording)
+[Sequencing](#sequencing)
+[Clock](#clock)
+[Keys & Encoders](#keys-and-encoders)
+[Commands](#commands)
+[Additional Parameters](#additional-parameters)
 
 -----
 
@@ -20,7 +25,7 @@ Though complexity arises from the relationship between the audio buffers and the
 
 -----
 
-__*Sequencing*__
+#### Sequencing
 
 Compass' sequencer moves through commands of your choosing that trigger different functions. Use commands to, for example:
 
@@ -34,14 +39,14 @@ The two buffers are purposefully long, allowing sounds to travel freely to diffe
 
 -----
 
-__*Clock*__
+#### Clock
 
 Head to the `params` menu to switch between two clocking options:
 
 - Internal -- a handful of commands are available to modify this clock's speed and direction
 - Crow (input 1) -- note that the commands intended for to the internal clock are disabled when this mode is selected
 
-__*Keys & Encoders*__
+#### Keys and Encoders
 
 - `E1` : Scroll between the `EDIT` and `REFERENCE` pages
 - `E2` : Navigate to step in command row
@@ -56,17 +61,17 @@ __*Keys & Encoders*__
 
 -----
 
-__*Commands*__
+#### Commands
 
 Commands come in two flavors: those that manipulate the sequence, and those that manipulate recording/looping/playback behaviors (i.e. softcut). Don't worry about memorizing everything, though -- descriptions for all commands are available in the script itself on the `REFERENCE` pages. 
 
 Sequence commands:
 
-- `C` : Set clock interval to 1s. 
-- `<` : Decrement clock speed (down to 4s.)
-- `>` : Increment clock speed (up to 0.0625s.)
-- `[` : Set clock to slowest speed (4s.)
-- `]` : Set clock to highest speed (0.0625s.)
+- `C` : Set clock interval to 1s. *
+- `<` : Decrement clock speed (down to 4s.) *
+- `>` : Increment clock speed (up to 0.0625s.) *
+- `[` : Set clock to slowest speed (4s.) *
+- `]` : Set clock to highest speed (0.0625s.) *
 - `?` : Jump to random step in sequence
 
 Softcut commands: 
@@ -81,11 +86,17 @@ Softcut commands:
 - `(` : Randomly change pan position (L)
 - `)` : Randomly change pan position (R)
 
+Crow commands:
+
+- `T` : Sends pulse to crow output 1
+- `V` : Sends random voltage (0-10v) to crow output 2
+
+* These commands are disabled if the clock param is set to `crow in 1`
 † The `+`, `-`, and `!` commands move within a range of pre-set rates: { -2x, -1x, -0.5x, 0.5x, 1x, 2x }
 
 -----
 
-__*Additional Parameters*__
+#### Additional Parameters
 
 Head to Norns' `params` menu for these additional parameters: 
 
