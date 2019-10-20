@@ -1,10 +1,12 @@
-### Compass (v1.1)
+### Compass (v2.0)
 
 __Compass__ is an asynchronous looper for Monome Norns built around the concept of a command sequencer. Commands (assigned per step in the bottom row of the `EDIT` page) modulate sequence, recording, playback and looping behaviors. 
 
+[Input Routing & Recording](#input-routing-and-recording)
+
 -----
 
-__*Input Routing & Recording*__
+#### Input Routing and Recording
 
 Compass assumes a stereo source by default. If using a mono source:
 
@@ -31,6 +33,13 @@ Compass' audio buffers and its sequencer each have their own sense of time in or
 The two buffers are purposefully long, allowing sounds to travel freely to different regions during recording and playback. Unexpected (and hopefully interesting!) things can happen as the two record/playback heads are independently modulated. 
 
 -----
+
+__*Clock*__
+
+Head to the `params` menu to switch between two clocking options:
+
+- Internal -- a handful of commands are available to modify this clock's speed and direction
+- Crow (input 1) -- note that the commands intended for to the internal clock are disabled when this mode is selected
 
 __*Keys & Encoders*__
 
