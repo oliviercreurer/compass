@@ -1,8 +1,10 @@
 --
--- Compass (v1.1)
+-- Compass (2.0)
 -- Command-based looper
 -- @olivier
--- https://llllllll.co/t/compass/25192
+-- llllllll.co/t/compass/25192
+-- w/ contributions from
+-- @justmat + @gonecaving
 --
 -- E1: Scroll pages
 -- E2: Navigate to step
@@ -38,7 +40,7 @@ local down_time = 0
 local KEYDOWN1 = 0
 local KEYDOWN2 = 0
 
-local pages = {"EDIT", "COMMANDS/SEQUENCE", "COMMANDS/SEQUENCE", "COMMANDS/SOFTCUT", "COMMANDS/SOFTCUT", "COMMANDS/SOFTCUT"}
+local pages = {"EDIT", "COMMANDS/SEQUENCE", "COMMANDS/SEQUENCE", "COMMANDS/SOFTCUT", "COMMANDS/SOFTCUT", "COMMANDS/SOFTCUT + ^^"}
 local positions = {0,0}
 local rates = {-2,-1,-0.5,0.5,1,2}
 
@@ -91,6 +93,54 @@ function set_input(n)
   end
 end
 
+function set_clock(x)
+  if x == 1 then
+    m:start()
+    crow.input[1].mode("none")
+  else
+    m:stop()
+    crow.input[1].mode("change", 2.0, 0.25, "rising")
+  end
+  for i=1,#step do
+    step[i] = 1
+  end
+  count()
+  redraw()
+end
+
+function set_crowIn2(x)
+  if x == 1 then
+    audio.level_cut(1)
+    crow.input[2].mode("none")
+    print("^^ in 2: OFF")
+  else
+    crow.input[2].mode("stream", 0.1)
+    if x == 2 then
+      crow.input[2].stream = scLevel
+      print("^^ in 2: SOFTCUT LEVEL")
+    elseif x == 3 then
+      crow.input[2].stream = scRate
+      print("^^ in 2: SOFTCUT RATE")
+    end
+  end
+end
+
+function scLevel(x)
+  x = util.clamp(x,0,5)
+  -- print("input stream (level):"..(x*2)/10)
+  audio.level_cut((x*2)/10)
+end
+
+function scRate(x)
+  x = util.clamp(x,-4,4)
+  -- print("input stream (rate):"..x)
+  for i=1,2 do
+    softcut.rate(i,x)
+  end
+  -- audio.level_cut(1)
+end
+  
+
 -- SEQUENCE LENGTH
 
 function setn(t,n)
@@ -111,8 +161,10 @@ function stepRnd() pos = math.random(1,#step) end
 -- Softcut
 function rateForward() for i=1,2 do softcut.rate(i,rates[5]) end end
 function rateReverse() for i=1,2 do softcut.rate(i,rates[2]) end end
-function rateInc() ratePos = util.clamp(ratePos+1,1,6) for i=1,2 do softcut.rate(i,rates[ratePos]) end end
-function rateDec() ratePos = util.clamp(ratePos-1,1,6) for i=1,2 do softcut.rate(i,rates[ratePos]) end end
+-- function rateInc() ratePos = util.clamp(ratePos+1,1,6) for i=1,2 do softcut.rate(i,rates[ratePos]) end end
+-- function rateDec() ratePos = util.clamp(ratePos-1,1,6) for i=1,2 do softcut.rate(i,rates[ratePos]) end end
+function rateInc() for i=1,2 do softcut.rate(i,rates[math.random(4,6)]) end end
+function rateDec() for i=1,2 do softcut.rate(i,rates[math.random(1,3)]) end end
 function rateRnd() for i=1,2 do softcut.rate(i,rates[math.random(1,6)]) end end
 function sPosStart() for i=1,2 do softcut.position(i,loopStart) end end
 function sPosRnd() for i=1,2 do softcut.position(i,1+math.random(loopStart,loopEnd)) end end
@@ -120,10 +172,17 @@ function loopRnd() loopStart = math.random(1,loopEnd-1) ; loopEnd = math.random(
 function rndPanL() panL = math.random(0,9)/-10 end
 function rndPanR() panR = math.random(0,9)/10 end
 
-local act = {metroSteady,metroDec,metroInc,metroBottom,metroTop,stepRnd,rateForward,rateReverse,rateInc,rateDec,rateRnd,sPosStart,sPosRnd,loopRnd,rndPanL,rndPanR}
-local COMMANDS = 16
-local label = {"C", "<", ">", "[", "]", "?", "F", "R", "+", "-", "!", "1", "P", "L", "(", ")"}
-local description = {"- Steady clock (1s)", "- Decrease clock speed", "- Increase clock speed", "- Bottom speed", "- Top speed", "- Jump to random step", "- Forward rate (1x)", "- Reverse rate (1x)", "- Increase rate", "- Decrease rate", "- Random rate", "- Loop start", "- Random position", "- Random loop start/end", "- Random pan pos (L)", "- Random pan pos (R)"}
+-- Crow
+function crowTrig() crow.output[1].execute() end
+function crowRnd() crow.output[2].volts = math.random(10) end
+
+local act = {metroSteady,metroDec,metroInc,metroBottom,metroTop,stepRnd,rateForward,rateReverse,rateInc,rateDec,rateRnd,sPosStart,sPosRnd,loopRnd,rndPanL,rndPanR,crowTrig,crowRnd}
+local actCrow = {stepRnd,rateForward,rateReverse,rateInc,rateDec,rateRnd,sPosStart,sPosRnd,loopRnd,rndPanL,rndPanR,crowTrig,crowRnd}
+local COMMANDS = 18
+local COMMANDScrow = 13
+local label = {"C", "<", ">", "[", "]", "?", "F", "R", "+", "-", "!", "1", "P", "L", "(", ")", "T", "V"}
+local labelCrow = {"?", "F", "R", "+", "-", "!", "1", "P", "L", "(", ")", "T", "V" }
+local description = {"- Steady clock (1s)", "- Decrease clock speed", "- Increase clock speed", "- Bottom speed", "- Top speed", "- Jump to random step", "- Forward rate (1x)", "- Reverse rate (1x)", "- Increase rate", "- Decrease rate", "- Random rate", "- Loop start", "- Random position", "- Random loop start/end", "- Random pan pos (L)", "- Random pan pos (R)", "- Pulse (crow out 1)", "- Rnd voltage (crow out 2)"}
 
 function init()
   
@@ -131,6 +190,10 @@ function init()
   
   params:add_option("input", "Input", {"Stereo", "Mono (L)"}, 1)
   params:set_action("input", function(x) set_input(x) end)
+  params:add_option("clock", "Clock", {"Internal", "crow in 1"},1)
+  params:set_action("clock", function(x) set_clock(x) end)
+  params:add_option("cutlevel", "Crow in 2", {"Off", "SC Level", "SC Rate"}, 1)
+  params:set_action("cutlevel", function(x) set_crowIn2(x) end)
   
   params:add_separator()
   
@@ -188,6 +251,13 @@ function init()
   softcut.event_phase(update_positions)
   softcut.poll_start_phase()
   
+  -- CROW
+  
+  crow.input[1].change = count
+  crow.output[1].action = "pulse(0.01,7,1)"
+  crow.input[2].mode("none")
+  -- crow.input[2].stream = scLevel
+  
 	-- SOFTCUT 
 	
 	softcut.buffer_clear()
@@ -232,7 +302,11 @@ end
 
 function count()
   pos = (pos % #step) + 1
-  act[step[pos]]()
+  if params:get("clock") == 1 then
+    act[step[pos]]()
+  else
+    actCrow[step[pos]]()
+  end
   redraw()
   --print("ratePos " .. ratePos)
 end
@@ -247,7 +321,11 @@ end
 
 function randomize_steps()
   for i=1,#step do
-    step[i] = math.random(COMMANDS)
+    if params:get("clock") == 1 then
+      step[i] = math.random(COMMANDS)
+    else
+      step[i] = math.random(COMMANDS-5)
+    end
   end
 end
 
@@ -278,7 +356,11 @@ function enc(n,d)
       print("loop end " .. loopEnd)
     else
       if pageNum == 1 then
-        step[edit] = util.clamp(step[edit]+d, 1, COMMANDS)
+        if params:get("clock") == 1 then
+          step[edit] = util.clamp(step[edit]+d, 1, COMMANDS)
+        else
+          step[edit] = util.clamp(step[edit]+d, 1, COMMANDS-5)
+        end
       elseif pageNum == 2 then
         if sel == 1 then
           params:delta("REC",d)
@@ -365,7 +447,11 @@ function drawCommands()
     else
       screen.level(1)
     end
-    screen.text(label[step[i]])
+    if params:get("clock") == 1 then
+      screen.text(label[step[i]])
+    else 
+      screen.text(labelCrow[step[i]])
+    end
   end
 end
 
@@ -413,6 +499,13 @@ function drawHelp()
       screen.move(10,i*10+16)
       screen.text(description[i])
     end
+    screen.level(2)
+      screen.move(2,58)
+    -- if params:get("clock") == 2 then
+    --   screen.text("DISABLED: EXTERNAL CLOCK")
+    -- else
+    --   screen.text("")
+    -- end
   elseif pageNum == 3 then
     screen.level(2)
     screen.move(126,10)
@@ -463,12 +556,12 @@ function drawHelp()
     screen.move(126,10)
     screen.text_right("5/5")
     screen.level(15)
-    for i=15,16 do
+    for i=15,18 do
       screen.move(2,((i-14)*10)+16)
       screen.text(label[i])
     end
     screen.level(4)
-    for i=15,16 do
+    for i=15,18 do
       screen.move(10,((i-14)*10)+16)
       screen.text(description[i])
     end
