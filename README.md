@@ -49,6 +49,8 @@ Head to the `params` menu to switch between two clocking options:
 
 > Note: It is recommended to select your desired clocking option before you start modifying the command sequence.
 
+-----
+
 #### Keys and Encoders
 
 - `E1` : Scroll between the `EDIT` and `REFERENCE` pages
@@ -121,6 +123,8 @@ Head to Norns' `params` menu for these additional parameters:
 - `ARCIFY PARAMS`
 
 All parameters can be midi-mapped, with the exception of `INPUT`. 
+
+-----
 
 #### Crow
 
