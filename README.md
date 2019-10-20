@@ -47,7 +47,7 @@ Head to the `params` menu to switch between two clocking options:
 - `Internal` -- a handful of commands are available to modify this clock's speed and direction
 - `Crow (input 1)` -- note that the commands intended for the internal clock are disabled when this mode is selected
 
-> Note: It is recommended to select your desired clocking option before you start modifying the command sequence.
+> __Note!__ Switching to either clock option will clear your existing commands! It is recommended you select your desired clocking option _before_ you start modifying the command sequence.
 
 -----
 
