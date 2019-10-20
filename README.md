@@ -8,6 +8,7 @@ __Compass__ is an asynchronous looper for Monome Norns built around the concept 
 - [Keys & Encoders](#keys-and-encoders)
 - [Commands](#commands)
 - [Additional Parameters](#additional-parameters)
+- [Crow](#crow)
 
 -----
 
@@ -43,8 +44,8 @@ The two buffers are purposefully long, allowing sounds to travel freely to diffe
 
 Head to the `params` menu to switch between two clocking options:
 
-- Internal -- a handful of commands are available to modify this clock's speed and direction
-- Crow (input 1) -- note that the commands intended for to the internal clock are disabled when this mode is selected
+- `Internal` -- a handful of commands are available to modify this clock's speed and direction
+- `Crow (input 1)` -- note that the commands intended for the internal clock are disabled when this mode is selected
 
 #### Keys and Encoders
 
@@ -101,6 +102,8 @@ Crow commands:
 Head to Norns' `params` menu for these additional parameters: 
 
 - `INPUT` (Stereo or Mono)
+- `CLOCK` (Internal or Crow in 1)
+- `CROW IN 2` (Off, Softcut Level, Softcut Rate -- see [crow](#crow) section below for details)
 - `RECORD LEVEL` (0 - 1)
 - `OVERDUB` (0 - 1)
 - `RATE` (-2 - 2, in 0.25 increments)
@@ -115,3 +118,12 @@ Head to Norns' `params` menu for these additional parameters:
 - `ARCIFY PARAMS`
 
 All parameters can be midi-mapped, with the exception of `INPUT`. 
+
+#### Crow
+
+As of v2.0, Compass can communicate with crow! Crow's first input can be used to clock Compass' command sequence (see the [clock](#clock) section above), while the second input can be configured in the `params` menu as follows:
+
+- `OFF` (default): If you don't have a crow, or you aren't using input 2 for anything, leave this as is.
+- `SC LEVEL`: Send a voltage source to modulate softcut's level. 0v to +5v
+- `SC RATE` : Send a voltage source to modulate softcut's rate (both voices). -4v to +4v
+
