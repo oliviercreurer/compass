@@ -68,20 +68,20 @@ Commands come in two flavors: those that manipulate the sequence, and those that
 
 Sequence commands:
 
-- `C` : Set clock interval to 1s. *
-- `<` : Decrement clock speed (down to 4s.) *
-- `>` : Increment clock speed (up to 0.0625s.) *
-- `[` : Set clock to slowest speed (4s.) *
-- `]` : Set clock to highest speed (0.0625s.) *
+- `C` : Set clock interval to 1s. <sup>1</sup>
+- `<` : Decrement clock speed (down to 4s.) <sup>1</sup>
+- `>` : Increment clock speed (up to 0.0625s.) <sup>1</sup>
+- `[` : Set clock to slowest speed (4s.) <sup>1</sup>
+- `]` : Set clock to highest speed (0.0625s.) <sup>1</sup>
 - `?` : Jump to random step in sequence
 
 Softcut commands: 
 
 - `F` : Set forward (1x) rate 
 - `R` : Set reverse (1x) rate 
-- `+` : Increase rate † 
-- `-` : Decrease rate † 
-- `!` : Set a random rate for each record head † 
+- `+` : Increase rate <sup>2</sup>
+- `-` : Decrease rate <sup>2</sup>
+- `!` : Set a random rate for each record head <sup>2</sup> 
 - `1` : Send _both_ record/playback heads to loop _start_ point
 - `P` : Send _each_ record/playback head to a random position within loop
 - `(` : Randomly change pan position (L)
@@ -92,8 +92,9 @@ Crow commands:
 - `T` : Sends pulse to crow output 1
 - `V` : Sends random voltage (0-10v) to crow output 2
 
-* These commands are disabled if the clock param is set to `crow in 1`
-† The `+`, `-`, and `!` commands move within a range of pre-set rates: { -2x, -1x, -0.5x, 0.5x, 1x, 2x }
+<sup>1</sup> These commands are disabled if the clock param is set to `crow in 1`
+
+<sup>2</sup> The `+`, `-`, and `!` commands move within a range of pre-set rates: { -2x, -1x, -0.5x, 0.5x, 1x, 2x }
 
 -----
 
