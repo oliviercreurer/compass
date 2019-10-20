@@ -131,6 +131,6 @@ All parameters can be midi-mapped, with the exception of `INPUT`.
 As of v2.0, Compass can communicate with crow! Crow's first input can be used to clock Compass' command sequence (see the [clock](#clock) section above), while the second input can be configured in the `params` menu as follows:
 
 - `OFF` (default): If you don't have a crow, or you aren't using input 2 for anything, leave this as is.
-- `SC LEVEL`: Send a voltage source to modulate softcut's level. 0v to +5v
-- `SC RATE` : Send a voltage source to modulate softcut's rate (both voices). -4v to +4v
+- `SC LEVEL`: Send a voltage source to modulate softcut's level. Range: __0v to +5v__
+- `SC RATE` : Send a voltage source to modulate softcut's rate (both voices). Range: __-4v to +4v__
 
