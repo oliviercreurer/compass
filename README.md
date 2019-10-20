@@ -81,8 +81,8 @@ Crow commands:
 - `T` : Sends pulse to crow output 1
 - `V` : Sends random voltage (0-10v) to crow output 2
 
-<sup>1</sup> These commands are disabled if the clock param is set to `crow in 1` <br>
-<sup>2</sup> The `+`, `-`, and `!` commands move within a range of pre-set rates: { -2x, -1x, -0.5x, 0.5x, 1x, 2x }
+> <sup>1</sup> These commands are disabled if the clock param is set to `crow in 1` <br>
+> <sup>2</sup> The `+`, `-`, and `!` commands move within a range of pre-set rates: { -2x, -1x, -0.5x, 0.5x, 1x, 2x }
 
 -----
 
