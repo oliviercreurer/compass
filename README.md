@@ -51,24 +51,9 @@ Head to the `params` menu to switch between two clocking options:
 
 -----
 
-#### Keys and Encoders
-
-- `E1` : Scroll between the `EDIT` and `REFERENCE` pages
-- `E2` : Navigate to step in command row
-- `E3` : Select command at step
-- `K2` (short) : reset command row to default state (does *not* affect softcut buffers)
-- `K2` (long) : randomize all commands
-- `K3` (short) : toggle recording on/off
-- `K3` (long) : clear both softcut buffers (does *not* affect command row)
-- `K1` (hold) + `E1` : set # of steps in sequence (2 - 16)
-- `K1` (hold) + `E2` : set loop start point (can be midi-mapped in `params` menu)
-- `K1` (hold) + `E3` : set loop end point (can be midi-mapped in `params` menu)
-
------
-
 #### Commands
 
-Commands come in two flavors: those that manipulate the sequence, and those that manipulate recording/looping/playback behaviors (i.e. softcut). Don't worry about memorizing everything, though -- descriptions for all commands are available in the script itself on the `REFERENCE` pages. 
+Commands come in three flavors: those that manipulate the sequence, those that manipulate recording/looping/playback behaviors (i.e. softcut), and those that control crow. Don't worry about memorizing everything, though -- descriptions for all commands are available in the script itself on the `REFERENCE` pages. 
 
 Sequence commands:
 
@@ -99,6 +84,21 @@ Crow commands:
 <sup>1</sup> These commands are disabled if the clock param is set to `crow in 1`
 
 <sup>2</sup> The `+`, `-`, and `!` commands move within a range of pre-set rates: { -2x, -1x, -0.5x, 0.5x, 1x, 2x }
+
+-----
+
+#### Keys and Encoders
+
+- `E1` : Scroll between the `EDIT` and `REFERENCE` pages
+- `E2` : Navigate to step in command row
+- `E3` : Select command at step
+- `K2` (short) : reset command row to default state (does *not* affect softcut buffers)
+- `K2` (long) : randomize all commands
+- `K3` (short) : toggle recording on/off
+- `K3` (long) : clear both softcut buffers (does *not* affect command row)
+- `K1` (hold) + `E1` : set # of steps in sequence (2 - 16)
+- `K1` (hold) + `E2` : set loop start point (can be midi-mapped in `params` menu)
+- `K1` (hold) + `E3` : set loop end point (can be midi-mapped in `params` menu)
 
 -----
 
