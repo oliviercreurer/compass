@@ -1,5 +1,5 @@
 --
--- Compass (2.0)
+-- Compass (2.0.1)
 -- Command-based looper
 -- @olivier
 -- llllllll.co/t/compass/25192
@@ -24,6 +24,7 @@ local recLevel = 1
 local pre = 1
 local pos = 1
 local edit = 1
+local clkSpd = 1
 
 local loopStart = 1
 local loopEnd = 65
@@ -114,7 +115,7 @@ function set_crowIn2(x)
     crow.input[2].mode("none")
     print("^^ in 2: OFF")
   else
-    crow.input[2].mode("stream", 0.1)
+    crow.input[2].mode("stream", 0.05)
     if x == 2 then
       crow.input[2].stream = scLevel
       print("^^ in 2: SOFTCUT LEVEL")
@@ -150,11 +151,11 @@ end
 -- COMMANDS
 
 -- Sequence
-function metroSteady() m.time = 1 end
-function metroDec() m.time = util.clamp(m.time * 2, 0.0625,4) end
-function metroInc() m.time = util.clamp(m.time / 2, 0.0625,4) end
-function metroTop() m.time = 0.0624 end
-function metroBottom() m.time = 4 end
+function metroSteady() m.time = clkSpd end
+function metroDec() m.time = util.clamp(clkSpd * 2, clkSpd/16, clkSpd*4) end
+function metroInc() m.time = util.clamp(clkSpd / 2, clkSpd/16, clkSpd*4) end
+function metroTop() m.time = clkSpd/16 end
+function metroBottom() m.time = clkSpd*4 end
 function stepRnd() pos = math.random(1,#step) end
 
 
@@ -182,7 +183,7 @@ local COMMANDS = 18
 local COMMANDScrow = 13
 local label = {"C", "<", ">", "[", "]", "?", "F", "R", "+", "-", "!", "1", "P", "L", "(", ")", "T", "V"}
 local labelCrow = {"?", "F", "R", "+", "-", "!", "1", "P", "L", "(", ")", "T", "V" }
-local description = {"- Steady clock (1s)", "- Decrease clock speed", "- Increase clock speed", "- Bottom speed", "- Top speed", "- Jump to random step", "- Forward rate (1x)", "- Reverse rate (1x)", "- Increase rate", "- Decrease rate", "- Random rate", "- Loop start", "- Random position", "- Random loop start/end", "- Random pan pos (L)", "- Random pan pos (R)", "- Pulse (crow out 1)", "- Rnd voltage (crow out 2)"}
+local description = {"- Steady clock", "- / clock speed by 2", "- * clock speed by 2", "- Bottom speed", "- Top speed", "- Jump to random step", "- Forward rate (1x)", "- Reverse rate (1x)", "- Increase rate", "- Decrease rate", "- Random rate", "- Loop start", "- Random position", "- Random loop start/end", "- Random pan pos (L)", "- Random pan pos (R)", "- Pulse (crow out 1)", "- Rnd voltage (crow out 2)"}
 
 function init()
   
@@ -192,6 +193,8 @@ function init()
   params:set_action("input", function(x) set_input(x) end)
   params:add_option("clock", "Clock", {"Internal", "crow in 1"},1)
   params:set_action("clock", function(x) set_clock(x) end)
+  params:add_number("clockSpeed","Int. Clock Speed",1,4,1)
+  params:set_action("clockSpeed", function(x) clkSpd = x end)
   params:add_option("cutlevel", "Crow in 2", {"Off", "SC Level", "SC Rate"}, 1)
   params:set_action("cutlevel", function(x) set_crowIn2(x) end)
   
@@ -243,7 +246,7 @@ function init()
   
   -- METROS
   
-  m = metro.init(count,1,-1)
+  m = metro.init(count,clkSpd,-1)
   m:start()
   
   -- POSITION POLL
