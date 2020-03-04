@@ -1,5 +1,7 @@
 ### Compass (v2.0)
 
+
+
 __Compass__ is an asynchronous looper for Monome Norns built around the concept of a command sequencer. Commands (assigned per step in the bottom row of the `EDIT` page) modulate sequence, recording, playback and looping behaviors. 
 
 - [Input Routing & Recording](#input-routing-and-recording)&nbsp;
@@ -49,6 +51,8 @@ Head to the `params` menu to switch between two clocking options:
 
 > __Note!__ Switching to either clock option will clear your existing commands! It is recommended you select your desired clock option _before_ you start modifying the command sequence.
 
+Compass' base clock speed is __1s__, but it can be increased in `params` up to __4s__ to _really slow things down_.  
+
 -----
 
 #### Commands
@@ -75,6 +79,7 @@ Softcut commands:
 - `P` : Send _each_ record/playback head to a random position within loop
 - `(` : Randomly change pan position (L)
 - `)` : Randomly change pan position (R)
+- `::` : Toggle recording on/off
 
 Crow commands:
 
@@ -96,8 +101,8 @@ Crow commands:
 - `K3` (short) : toggle recording on/off
 - `K3` (long) : clear both softcut buffers (does *not* affect command row)
 - `K1` (hold) + `E1` : set # of steps in sequence (2 - 16)
-- `K1` (hold) + `E2` : set loop start point (can be midi-mapped in `params` menu)
-- `K1` (hold) + `E3` : set loop end point (can be midi-mapped in `params` menu)
+- `K1` (hold) + `E2` : set start point (can be midi-mapped in `params` menu)
+- `K1` (hold) + `E3` : set end point (can be midi-mapped in `params` menu)
 
 -----
 
@@ -115,8 +120,9 @@ Head to Norns' `params` menu for these additional parameters:
 - `FADE` (0s - 1s ; adjust crossfade when changing position)
 - `PAN(R)` (0 - 1)
 - `PAN(L)` (0 - 1)
-- `LOOP START`
-- `LOOP END`
+- `START POINT`
+- `END POINT`
+- `BIT DEPTH`
 - `CUT LEVEL` (0 - 1)
 - `INPUT LEVEL` (0 - 1)
 - `ARCIFY PARAMS`
