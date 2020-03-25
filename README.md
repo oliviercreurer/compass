@@ -108,12 +108,12 @@ Crow commands:
 
 Head to Norns' `params` menu for these additional parameters:
 
-- __RECORDING__
+- __Recording__
   - `INPUT` (Stereo or Mono)
   - `RECORD LEVEL` (0 - 1)
   - `OVERDUB` (0 - 1)
   - `BIT DEPTH`
-- __BUFFERS__
+- __Buffers__
   - `RATE (COARSE)` (-2 - 2, in 0.25 increments)
   - `RATE (SLEW)` (0s - 2s)
   - `FADE` (0s - 1s ; adjust crossfade when changing position)
@@ -122,12 +122,12 @@ Head to Norns' `params` menu for these additional parameters:
   - `PAN (SLEW)` (0s - 2s)
   - `START POINT`
   - `END POINT`
-- __CLOCKING__
+- __Clocking__
   - `CLOCK` (Internal or Crow in 1)
   - `INT. CLOCK SPEED` (1s - 4s)
-- __CROW__
+- __Crow__
   - `MODE (INPUT 2)` (see [crow](#crow) section below for details)
-- __ARC__
+- __Arc__
   - `ARCIFY PARAMS`
 
 -----
