@@ -222,12 +222,12 @@ end
 
 --- Add Arcify assignment params to the Norns PARAMS screen.
 function Arcify:add_params()
-    params:add_separator()
+    -- params:add_separator()
     for i = 1, 4 do
         build_encoder_mapping_param(self, i, false)
     end
 
-    params:add_separator()
+    --params:add_separator()
     params:add {
         type = "option",
         id = "arc_shift_key",
@@ -243,7 +243,7 @@ function Arcify:add_params()
         options = SHIFT_MODE,
         default = 1
     }
-    params:add_separator()
+    --params:add_separator()
 
     for i = 1, 4 do
         build_encoder_mapping_param(self, i, true)
