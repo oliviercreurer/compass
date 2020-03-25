@@ -94,7 +94,7 @@ Crow commands:
 - `E1` : Scroll between the `EDIT` and `REFERENCE` pages
 - `E2` : Navigate to step in command row
 - `E3` : Select command at step (hold `K2` to prevent unwanted commands from being fired while selecting)
-- `K1`+`K2` : reset command row to default state (does *not* affect softcut buffers)
+- `K1 + K2` : reset command row to default state (does *not* affect softcut buffers)
 - `K1 + K3` : randomize all commands
 - `K3` (short) : toggle recording on/off
 - `K3` (long) : clear both softcut buffers (does *not* affect command row)
