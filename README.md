@@ -1,8 +1,6 @@
 ### Compass (v2.1)
 
-
-
-__Compass__ is an asynchronous looper for Monome Norns built around the concept of a command sequencer. Commands (assigned per step in the bottom row of the `EDIT` page) modulate sequence, recording, playback and looping behaviors. 
+__Compass__ is an asynchronous looper for Monome Norns built around the concept of a command sequencer. Commands (assigned per step in the bottom row of the `EDIT` page) modulate sequence, recording, playback and looping behaviors.
 
 - [Input Routing & Recording](#input-routing-and-recording)&nbsp;
 - [Sequencing](#sequencing)
@@ -38,7 +36,7 @@ Compass' sequencer moves through commands of your choosing that trigger differen
 
 Compass' audio buffers and its sequencer each have their own sense of time in order to facilitate experimentation. Interesting effects and textures can be created by recording into loops long and short, randomizing commands on the fly, modifying the sequence length, etc.
 
-The two buffers are purposefully long, allowing sounds to travel freely to different regions during recording and playback. Unexpected (and hopefully interesting!) things can happen as the two record/playback heads are independently modulated. 
+The two buffers are purposefully long, allowing sounds to travel freely to different regions during recording and playback. Unexpected (and hopefully interesting!) things can happen as the two record/playback heads are independently modulated.
 
 -----
 
@@ -57,7 +55,7 @@ Compass' base clock speed is __1s__, but it can be increased in `params` up to _
 
 #### Commands
 
-Commands come in three flavors: those that manipulate the sequence, those that manipulate recording/looping/playback behaviors (i.e. softcut), and those that control crow. Don't worry about memorizing everything, though -- descriptions for all commands are available in the script itself on the `REFERENCE` pages. 
+Commands come in three flavors: those that manipulate the sequence, those that manipulate recording/looping/playback behaviors (i.e. softcut), and those that control crow. Don't worry about memorizing everything, though -- descriptions for all commands are available in the script itself on the `REFERENCE` pages.
 
 Sequence commands:
 
@@ -68,13 +66,13 @@ Sequence commands:
 - `]` : Set clock to highest speed (0.0625s.) <sup>1</sup>
 - `?` : Jump to random step in sequence
 
-Softcut commands: 
+Softcut commands:
 
-- `F` : Set forward (1x) rate 
-- `R` : Set reverse (1x) rate 
+- `F` : Set forward (1x) rate
+- `R` : Set reverse (1x) rate
 - `+` : Random forward rate (0.5x - 2x) <sup>2</sup>
 - `-` : Random reverse rate (-2x - -0.5x) <sup>2</sup>
-- `!` : Set a random rate for each record head <sup>2</sup> 
+- `!` : Set a random rate for each record head <sup>2</sup>
 - `1` : Send _both_ record/playback heads to loop _start_ point
 - `P` : Send _each_ record/playback head to a random position within loop
 - `(` : Randomly change pan position (L)
@@ -95,39 +93,42 @@ Crow commands:
 
 - `E1` : Scroll between the `EDIT` and `REFERENCE` pages
 - `E2` : Navigate to step in command row
-- `E3` : Select command at step
-- `K2` (short) : reset command row to default state (does *not* affect softcut buffers)
-- `K2` (long) : randomize all commands
+- `E3` : Select command at step (hold `K2` to prevent unwanted commands from being fired while selecting)
+- `K1`+`K2` : reset command row to default state (does *not* affect softcut buffers)
+- `K1 + K3` : randomize all commands
 - `K3` (short) : toggle recording on/off
 - `K3` (long) : clear both softcut buffers (does *not* affect command row)
 - `K1` (hold) + `E1` : set # of steps in sequence (2 - 16)
-- `K1` (hold) + `E2` : set start point (can be midi-mapped in `params` menu)
-- `K1` (hold) + `E3` : set end point (can be midi-mapped in `params` menu)
+- `K1` (hold) + `E2` : set start point
+- `K1` (hold) + `E3` : set end point
 
 -----
 
 #### Additional Parameters
 
-Head to Norns' `params` menu for these additional parameters: 
+Head to Norns' `params` menu for these additional parameters:
 
-- `INPUT` (Stereo or Mono)
-- `CLOCK` (Internal or Crow in 1)
-- `CROW IN 2` (see [crow](#crow) section below for details)
-- `RECORD LEVEL` (0 - 1)
-- `OVERDUB` (0 - 1)
-- `RATE` (-2 - 2, in 0.25 increments)
-- `RATE SLEW` (0s - 2s)
-- `FADE` (0s - 1s ; adjust crossfade when changing position)
-- `PAN(R)` (0 - 1)
-- `PAN(L)` (0 - 1)
-- `START POINT`
-- `END POINT`
-- `BIT DEPTH`
-- `CUT LEVEL` (0 - 1)
-- `INPUT LEVEL` (0 - 1)
-- `ARCIFY PARAMS`
-
-All parameters can be midi-mapped, with the exception of `INPUT`. 
+- __RECORDING__
+  - `INPUT` (Stereo or Mono)
+  - `RECORD LEVEL` (0 - 1)
+  - `OVERDUB` (0 - 1)
+  - `BIT DEPTH`
+- __BUFFERS__
+  - `RATE (COARSE)` (-2 - 2, in 0.25 increments)
+  - `RATE (SLEW)` (0s - 2s)
+  - `FADE` (0s - 1s ; adjust crossfade when changing position)
+  - `PAN(R)` (0 - 1)
+  - `PAN(L)` (0 - 1)
+  - `PAN (SLEW)` (0s - 2s)
+  - `START POINT`
+  - `END POINT`
+- __CLOCKING__
+  - `CLOCK` (Internal or Crow in 1)
+  - `INT. CLOCK SPEED` (1s - 4s)
+- __CROW__
+  - `MODE (INPUT 2)` (see [crow](#crow) section below for details)
+- __ARC__
+  - `ARCIFY PARAMS`
 
 -----
 
@@ -138,4 +139,3 @@ As of v2.0, Compass can communicate with crow! Crow's first input can be used to
 - `OFF` (default): If you don't have a crow, or you aren't using input 2 for anything, leave this as is.
 - `SC LEVEL`: Send a voltage source to modulate softcut's level. Range: __0v to +5v__
 - `SC RATE` : Send a voltage source to modulate softcut's rate (both voices). Range: __-4v to +4v__
-
