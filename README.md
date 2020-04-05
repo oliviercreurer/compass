@@ -1,6 +1,8 @@
 ### Compass (v2.2)
 
-__Compass__ is an asynchronous looper for Monome Norns built around the concept of a command sequencer. Commands (assigned per step in the bottom row of the `EDIT` page) modulate sequence, recording, playback and looping behaviors.
+__Compass__ is an asynchronous looper for [monome norns](https://monome.org/docs/norns/) built around the concept of a command sequencer. Commands (assigned per step in the bottom row of the `EDIT` page) modulate sequence, recording, playback and looping behaviors.
+
+----
 
 - [Input Routing & Recording](#input-routing-and-recording)&nbsp;
 - [Sequencing](#sequencing)
@@ -21,7 +23,7 @@ Compass assumes a stereo source by default. If using a mono source:
 - be sure to plug your source into the _left_ input
 - set proper monitoring in Norns' `system/audio` settings
 
-By default, Compass records your audio source into two 64s buffers, though a smaller recording window can be set if desired. With a stereo source, each input is paired with a buffer; with a mono source, the input is recorded to both buffers. Stereo effects are then possible with either source type as the record/playback heads for each buffer can be split apart by various commands.
+By default, Compass records your audio source into two 64s buffers, though a smaller recording window can be set if desired. With a stereo source, each input is paired with a buffer; with a mono source, the input is recorded to both buffers. Stereo effects are then possible with either source type as the read/write heads for each buffer can be split apart by various commands.
 
 Though complexity arises from the relationship between the audio buffers and the command sequencer, as described below, Compass can also be used as a simple looper with an adjustable recording window (1s-64s).
 
@@ -33,7 +35,7 @@ Compass' sequencer moves through commands of your choosing that trigger differen
 
 * manipulate the sequence's clock or jump to a random step
 * randomly change the location of your loop within the buffers
-* alter the rate, direction and position of each record/playback head
+* alter the rate, direction and position of each read/write head
 
 Compass' audio buffers and its sequencer each have their own sense of time in order to facilitate experimentation. Interesting effects and textures can be created by recording into loops long and short, randomizing commands on the fly, modifying the sequence length, etc.
 
@@ -43,14 +45,14 @@ The two buffers are purposefully long, allowing sounds to travel freely to diffe
 
 #### Clock
 
-Head to the `params` menu to switch between two clocking options:
+Head to the `PARAMS` menu to switch between two clocking options:
 
-- `Internal` -- a handful of commands are available to modify this clock's speed and direction
-- `Crow (input 1)` -- note that the commands intended for the internal clock are disabled when this mode is selected
+- `INTERNAL` -- a handful of commands are available to modify this clock's speed and direction
+- `CROW (INPUT 1)` -- note that the commands intended for the internal clock are disabled when this mode is selected
 
 > __Note!__ Switching to either clock option will clear your existing commands! It is recommended you select your desired clock option _before_ you start modifying the command sequence.
 
-Compass' base clock speed is __1s__, but it can be increased in `params` up to __4s__ to _really slow things down_.  
+Compass' base clock speed is __1s__, but it can be increased in `PARAMS` up to __4s__ to _really slow things down_.  
 
 -----
 
@@ -92,19 +94,19 @@ __Crow commands__
 
 #### Grid Control
 
-With a grid connected, Compass gains a new performance dimension. Immediate, tactile control of both common and new functions, combined with the inclusion of pattern recorders, helps to build evolving sequences of layered sound.
+Connecting a grid opens Compass up to new performance possibilities. Commands and buffers can be controlled by hand, and all of your gestures can be captured by pattern recorders to build evolving sequences of layered sound.
 
 [insert svg]
 
-Compass' familiar visual layout is mimicked on the grid. The buffers are mapped to rows `D` and `E`, and the command sequence is mapped to row `G`. Bright lights indicate - you guessed it - the position of the play/record heads in rows `D` and `E`, and the active command in row `G`. An `ALT` key (`H1`) is available for various functions, which we'll explore shortly.
+Compass' screen layout is mimicked on the grid. The buffers are mapped to rows `D` and `E`, and the command sequence is mapped to row `G`. Bright lights indicate - you guessed it - the position of the read/write heads in rows `D` and `E`, and the active command in row `G`. An `ALT` key (`H1`) is available for various functions, which we'll explore shortly.
 
 __Buffers__
 
-Though limited by the resolution of the grid, the approximate position of each buffer's play/record head can be modified by simply...mashing on some keys in rows `D` and `E`.
+The position of each buffer's read/write head can be changed by simply...mashing on some keys in rows `D` and `E`. 
 
 __Commands & Clock__
 
-Any command can be fired manually by pressing its corresponding grid key. To facilitate this kind of manual playing, Compass' internal clock can be stopped (and started again) by pressing the `Clock` key (`H16`). Note that the `Clock` key is dimmed if the clock is stopped.
+Any command can be fired manually by pressing its corresponding grid key. To facilitate this kind of manual playing, Compass' internal clock can be stopped (and started again) by pressing the `CLOCK` key (`H16`). Note that the `CLOCK` key is dimmed if the clock is stopped.
 
 To quickly adjust the length of the command sequence, hold the `ALT` key (`H1`) while selecting a key in row `G`.
 
@@ -115,13 +117,18 @@ In row `A`, you'll find two banks of pattern recorders:
 - The first (`A1-4`) records key presses in the buffer rows (`D` and `E`)
 - The second (`A13-16`) records key presses in the command row (`G`)
 
-To record a pattern, press a key. When you've finished playing your pattern, press the key again to commit it to memory and to start playback. To _stop_ pattern playback, simply press the key again. To _clear_ a pattern, press its key while holding the `ALT` key.
+To record a pattern, press any key in the pattern bank. When you've finished playing your pattern, press the same key again to commit it to memory and to start playback. To _stop_ pattern playback, simply press the active pattern key again. To _clear_ a pattern, press its key while holding the `ALT` key.
 
 All of these various states have corresponding brightness levels:
 
 - High: recording/playback in progress
-- Medium: pattern stored and playback stopped
+- Medium: pattern stored but playback stopped
 - Low: pattern slot empty
+
+Lastly, the pattern banks actually have 2 different modes, which you can switch between using the `PATTERN MODE` key at `B1.`
+
+- In `PATTERN MODE 1` (`B1` key is dim), both of the pattern banks are decoupled, meaning you can have a buffer pattern and a command pattern playing simultaneously and asynchronously.
+- In `PATTERN MODE 2` (`B1` key is bright), all 8 patterns slots record presses in both the buffer and command rows. Use this mode is you want your commands and your buffer positions synced.
 
 -----
 
@@ -181,7 +188,7 @@ __Arc__
 
 #### Crow
 
-As of v2.0, Compass can communicate with crow! Crow's first input can be used to clock Compass' command sequence (see the [clock](#clock) section above), while the second input can be configured in the `params` menu as follows:
+A [monome crow](https://monome.org/docs/crow/) can be connected for further control. Its first input can be used to clock Compass' command sequence (see the [clock](#clock) section above), while the second input can be configured in the `params` menu as follows:
 
 - `OFF` (default): If you don't have a crow, or you aren't using input 2 for anything, leave this as is.
 - `SC LEVEL`: Send a voltage source to modulate softcut's level. Range: __0v to +5v__
