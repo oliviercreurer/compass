@@ -1,5 +1,5 @@
 --
--- Compass (2.2)
+-- Compass (3.0) - GRID UPDATE
 -- Command-based looper
 -- @olivier
 -- llllllll.co/t/compass/25192
@@ -18,8 +18,10 @@
 -- K1 + E3 : set loop end
 
 engine.name = "Decimatec"
-
+g = grid.connect()
 sc = softcut
+
+pattern_time = require 'pattern_time'
 
 local rate = 1
 local ratePos = 5
@@ -32,9 +34,11 @@ local clkSpd = 1
 
 local loopStart = 1
 local sPoint = 1
-local loopEnd = 65
-local ePoint = 65
+
 local loopLength = 64
+
+local loopEnd = loopLength+1
+local ePoint = loopLength+1
 
 local fade = 0.05
 local panL = -0.5
@@ -43,13 +47,15 @@ local last = 1
 local pageNum = 1
 local rateSlew = 0.1
 
+local crossTalk = 0
+
 local down_time = 0
 local KEYDOWN1 = 0
 local KEYDOWN2 = 0
 
 local pages = {"EDIT", "COMMANDS/SEQUENCE", "COMMANDS/SEQUENCE", "COMMANDS/SOFTCUT", "COMMANDS/SOFTCUT", "COMMANDS/SOFTCUT", "COMMANDS/CROW"}
 local positions = {0,0}
-local rates = {-2,-1,-0.5,0.5,1,2}
+local rates = {-4,-2,-1,-0.5,0.5,1,2,4}
 
 local STEPS = 16
 local step = {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}
@@ -59,6 +65,7 @@ local arcify = Arcify.new()
 
 function update_positions(i,x)
   redraw()
+  grid_redraw()
   positions[i] = util.clamp(x,0.1,loopEnd)
   for i=1,2 do
     sc.recpre_slew_time(i,2)
@@ -73,8 +80,10 @@ function update_positions(i,x)
     sc.loop_start(i,loopStart)
     sc.loop_end(i,loopEnd)
     sc.fade_time(i,fade)
-    sc.pan(1,panR)
-    sc.pan(2,panL)
+    sc.pan(1,panL)
+    sc.pan(2,panR)
+    -- sc.level_cut_cut(1,2,crossTalk)
+    -- sc.level_cut_cut(2,1,crossTalk)
   end
   setn(step,STEPS)
 end
@@ -166,11 +175,11 @@ function metroBottom() m.time = clkSpd*4 end
 function stepRnd() pos = math.random(1,#step) end
 
 -- sc
-function rateForward() for i=1,2 do sc.rate(i,rates[5]) end end
-function rateReverse() for i=1,2 do sc.rate(i,rates[2]) end end
-function rateInc() for i=1,2 do sc.rate(i,rates[math.random(4,6)]) end end
-function rateDec() for i=1,2 do sc.rate(i,rates[math.random(1,3)]) end end
-function rateRnd() for i=1,2 do sc.rate(i,rates[math.random(1,6)]) end end
+function rateForward() for i=1,2 do sc.rate(i,rates[6]) end end
+function rateReverse() for i=1,2 do sc.rate(i,rates[3]) end end
+function rateInc() for i=1,2 do sc.rate(i,rates[math.random(5,8)]) end end
+function rateDec() for i=1,2 do sc.rate(i,rates[math.random(1,4)]) end end
+function rateRnd() for i=1,2 do sc.rate(i,rates[math.random(1,8)]) end end
 function sPosStart() for i=1,2 do sc.position(i,loopStart) end end
 function sPosRnd() for i=1,2 do sc.position(i,math.random(loopStart,loopEnd)) end end
 function loopRnd() loopStart = math.random(sPoint,loopEnd-1) ; loopEnd = math.random(loopStart+1,ePoint) end
@@ -190,11 +199,26 @@ local label = {"C", "<", ">", "[", "]", "?", "F", "R", "+", "-", "!", "1", "P", 
 local labelCrow = {"?", "F", "R", "+", "-", "!", "1", "P", "L", "(", ")", "::", "T", "V" }
 local description = {"- Steady clock", "- / clock speed by 2", "- * clock speed by 2", "- Bottom speed", "- Top speed", "- Jump to random step", "- Forward rate (1x)", "- Reverse rate (1x)", "- Increase rate", "- Decrease rate", "- Random rate", "- Loop start", "- Random position", "- Random loop start/end", "- Random pan pos (L)", "- Random pan pos (R)", "- Toggle record", "- Pulse (crow out 1)", "- Rnd voltage (crow out 2)"}
 
+local grid_pattern = {}
+
 function init()
+
+  -- PATTERN RECORDERS
+  for i=1,4 do
+    grid_pattern[i] = pattern_time.new()
+    grid_pattern[i].process = execute_pattern_a
+  end
+
+  for i=13,16 do
+    grid_pattern[i] = pattern_time.new()
+    grid_pattern[i].process = execute_pattern_b
+  end
+
+  grid_redraw()
 
   -- PARAMS
 
-  params:add_group("COMPASS",30)
+  params:add_group("COMPASS",31)
   params:add_separator("RECORDING")
   params:add_option("Input", "Input", {"Stereo", "Mono (L)"}, 1)
   params:set_action("Input", function(x) set_input(x) end)
@@ -208,7 +232,7 @@ function init()
   params:add_separator("BUFFERS")
   -- params:add_group("BUFFERS",8)
   params:add{id="Rate (coarse)", name="Rate (coarse)", type="control",
-    controlspec=controlspec.new(-2,2,'lin',0.25,1,""),
+    controlspec=controlspec.new(-4,4,'lin',0.50,1,""),
     action=function(x)
       sc.rate(1,x)
       sc.rate(2,x)
@@ -227,6 +251,9 @@ function init()
   params:set_action("Start point", function(x) sPoint = util.clamp(x,1,ePoint-1); loopStart = sPoint end)
   params:add_control("End point","End point",controlspec.new(sPoint+1,65,'lin',1,65))
   params:set_action("End point", function(x) ePoint = util.clamp(x,sPoint+1,65); loopEnd = ePoint end)
+  params:add_control("Crosstalk","Crosstalk",controlspec.new(0,1,'lin',0.01,0.00))
+  params:set_action("Crosstalk", function(x) crossTalk = x  end)
+
 
   params:add_separator("CLOCKING")
   params:add_option("Clock", "Clock", {"Internal", "crow in 1"},1)
@@ -283,11 +310,13 @@ function init()
     -- sc.rec_level(i,1)
     sc.pre_level(i,pre)
     sc.rec(i,1)
-    sc.pan(1,panR)
-    sc.pan(2,panL)
+    sc.pan(1,panL)
+    sc.pan(2,panR)
     sc.rate(i,1)
     sc.phase_quant(i,0.03)
     sc.rate_slew_time(i,rateSlew)
+    sc.level_cut_cut(1,2,crossTalk)
+    sc.level_cut_cut(2,1,crossTalk)
   end
   -- set PRE filter
   for i=1,2 do
@@ -325,7 +354,7 @@ end
 
 -- Reset functions
 
-function commReset()
+function command_reset()
   ratePos = 5
   for i=1,#step do
     step[i] = 1
@@ -336,7 +365,7 @@ function commReset()
   end
 end
 
-function cutReset()
+function sc_reset()
   for i=1,2 do
     sc.position(i,loopStart)
     sc.rate(i,1)
@@ -397,7 +426,7 @@ function key(n,z)
   elseif n == 2 then
     KEYDOWN2 = z
     if KEYDOWN1 == 1 then
-      commReset()
+      command_reset()
     end
   elseif n == 3 then
     if z == 1 then
@@ -411,12 +440,239 @@ function key(n,z)
         recLevel = 1 - recLevel
       elseif hold_time > 1 then
         for i=1,#step do
-          cutReset()
+          sc_reset()
         end
       end
     end
   end
   redraw()
+end
+
+-- GRID
+
+-- local gridRate = 10
+local grid_alt = 0
+local metro_state = 1
+local pattern_mode = 0
+
+function patternbank_a(x,y,z)
+  for i=1,4 do
+    if z == 1 and y == 1 and x == i then
+      if grid_alt == 0 then
+        if grid_pattern[i].rec == 1 then
+          grid_pattern[i]:rec_stop()
+          grid_pattern[i]:start()
+        elseif grid_pattern[i].count == 0 then
+          grid_pattern[i]:rec_start()
+        elseif grid_pattern[i].play == 1 then
+          grid_pattern[i]:stop()
+        else
+          grid_pattern[i]:start()
+        end
+      elseif grid_alt == 1 then
+        grid_pattern[i]:rec_stop()
+        grid_pattern[i]:stop()
+        grid_pattern[i]:clear()
+        g:all(0)
+      end
+    end
+    if pattern_mode == 0 then
+      if z == 1 and y == 1 and x ~= i and x < 5 then
+        if grid_alt == 0 then
+          grid_pattern[i]:stop()
+        end
+      end
+    else
+      if z == 1 and y == 1 and x ~= i then
+        if grid_alt == 0 then
+          grid_pattern[i]:stop()
+        end
+      end
+    end
+  end
+  for i=1,4 do
+    if z == 1 and y ~= 8 then
+      record_this = {}
+      record_this.x = x
+      record_this.y = y
+      grid_pattern[i]:watch(record_this)
+      g:all(0)
+      g:led(x,y,z*15)
+    end
+  end
+end
+
+function patternbank_b(x,y,z)
+  for i=13,16 do
+    if z == 1 and y == 1 and x == i then
+      if grid_alt == 0 then
+        if grid_pattern[i].rec == 1 then
+          grid_pattern[i]:rec_stop()
+          grid_pattern[i]:start()
+        elseif grid_pattern[i].count == 0 then
+          grid_pattern[i]:rec_start()
+        elseif grid_pattern[i].play == 1 then
+          grid_pattern[i]:stop()
+        else
+          grid_pattern[i]:start()
+        end
+      elseif grid_alt == 1 then
+        grid_pattern[i]:rec_stop()
+        grid_pattern[i]:stop()
+        grid_pattern[i]:clear()
+        g:all(0)
+      end
+    end
+    if pattern_mode == 0 then
+      if z == 1 and y == 1 and x ~= i and x > 12 then
+        if grid_alt == 0 then
+          grid_pattern[i]:stop()
+        end
+      end
+    else
+      if z == 1 and y == 1 and x ~= i then
+        if grid_alt == 0 then
+          grid_pattern[i]:stop()
+        end
+      end
+    end
+  end
+  for i=13,16 do
+    if z == 1 and y ~= 8 then
+      record_this = {}
+      record_this.x = x
+      record_this.y = y
+      grid_pattern[i]:watch(record_this)
+      g:all(0)
+      g:led(x,y,z*15)
+    end
+  end
+end
+
+g.key = function(x,y,z)
+  patternbank_a(x,y,z)
+  patternbank_b(x,y,z)
+  if x == 1 and y == 8 then
+    grid_alt = z
+  end
+  if z == 1 then
+    if x == 16 and y == 8 then
+      metro_state = 1 - metro_state
+      if metro_state == 1 then
+        m:start()
+      else
+        m:stop()
+      end
+    elseif x == 1 and y == 2 then
+      pattern_mode = 1 - pattern_mode
+      print(pattern_mode)
+    elseif x > 0 and y == 7 then
+      if grid_alt == 1 then
+        STEPS = x
+      else
+        pos = x-1
+        count()
+      end
+    elseif y == 4 then
+      sc.position(1,math.floor((x*65)/16)-3)
+    elseif y == 5 then
+      sc.position(2,math.floor((x*65)/16)-3)
+    -- elseif y == 8 then
+    --   if x >= 6 and x <= 11 then
+    --     gridRate = x
+    --     for i=1,2 do
+    --       sc.rate(i,rates[x-5])
+    --     end
+    --   end
+    end
+  end
+  redraw()
+  -- print(gridRate)
+end
+
+function execute_pattern_a(recorded)
+  g:all(0)
+  g:led(recorded.x,recorded.y,15)
+  grid_redraw()
+  g:refresh()
+  if recorded.y == 4 then
+    sc.position(1,math.floor((recorded.x*65)/16)-3)
+  elseif recorded.y == 5 then
+    sc.position(2,math.floor((recorded.x*65)/16)-3)
+  end
+  if pattern_mode == 1 then
+    if recorded.y == 7 then
+      pos = recorded.x-1
+      count()
+    end
+  end
+end
+
+function execute_pattern_b(recorded)
+  g:all(0)
+  g:led(recorded.x,recorded.y,15)
+  grid_redraw()
+  g:refresh()
+  if recorded.y == 7 then
+    pos = recorded.x-1
+    count()
+  end
+  if pattern_mode == 1 then
+    if recorded.y == 4 then
+      sc.position(1,math.floor((recorded.x*65)/16)-3)
+    elseif recorded.y == 5 then
+      sc.position(2,math.floor((recorded.x*65)/16)-3)
+    end
+  end
+end
+
+function grid_redraw()
+  g:all(0)
+  for i=1,4 do
+    if grid_pattern[i].rec == 1 then
+      g:led(i,1,10)
+    elseif grid_pattern[i].play == 1 then
+      g:led(i,1,15)
+    elseif grid_pattern[i].play == 0 and grid_pattern[i].count > 0 then
+      g:led(i,1,5)
+    else
+      g:led(i,1,3)
+    end
+  end
+
+  for i=13,16 do
+    if grid_pattern[i].rec == 1 then
+      g:led(i,1,10)
+    elseif grid_pattern[i].play == 1 then
+      g:led(i,1,15)
+    elseif grid_pattern[i].play == 0 and grid_pattern[i].count > 0 then
+      g:led(i,1,5)
+    else
+      g:led(i,1,3)
+    end
+  end
+
+  local grid_start_point = util.clamp(math.abs(math.floor(sPoint*16/65)+1),1,16)
+  local grid_end_point = util.clamp(math.abs(math.floor(ePoint*16/65)+1),1,16)
+  -- clock led
+  g:led(1,8,5)
+  g:led(16,8,metro_state*3+3)
+  -- pattern mode led
+  g:led(1,2,pattern_mode*3+3)
+  for i=1,16 do
+    g:led(i,7,2)
+  end
+  for i=1,STEPS do
+    g:led(i,7,i==pos and 15 or 5)
+  end
+  for i=grid_start_point,grid_end_point do
+    g:led(i,4,i==util.clamp(math.abs(math.floor((positions[1]*16)/65)+1),1,16) and 15 or 5)
+    g:led(i,5,i==util.clamp(math.abs(math.floor((positions[2]*16)/65)+1),1,16) and 15 or 5)
+  end
+  -- for i=6,11 do
+  --   g:led(i,8,i==gridRate and 15 or 5)
+  -- end
+  g:refresh()
 end
 
 -- SCREEN -------------------------------------------

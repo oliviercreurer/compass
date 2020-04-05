@@ -6,6 +6,7 @@ __Compass__ is an asynchronous looper for Monome Norns built around the concept 
 - [Sequencing](#sequencing)
 - [Clock](#clock)
 - [Commands](#commands)
+- [Grid Control](#grid-control)
 - [Keys & Encoders](#keys-and-encoders)
 - [Additional Parameters](#additional-parameters)
 - [Crow](#crow)
@@ -57,7 +58,7 @@ Compass' base clock speed is __1s__, but it can be increased in `params` up to _
 
 Commands come in three flavors: those that manipulate the sequence, those that manipulate recording/looping/playback behaviors (i.e. softcut), and those that control crow. Don't worry about memorizing everything, though -- descriptions for all commands are available in the script itself on the `REFERENCE` pages.
 
-Sequence commands:
+__Sequence commands__
 
 - `C` : Set clock interval to 1s. <sup>1</sup>
 - `<` : Decrement clock speed (down to 4s.) <sup>1</sup>
@@ -66,7 +67,7 @@ Sequence commands:
 - `]` : Set clock to highest speed (0.0625s.) <sup>1</sup>
 - `?` : Jump to random step in sequence
 
-Softcut commands:
+__Softcut commands__
 
 - `F` : Set forward (1x) rate
 - `R` : Set reverse (1x) rate
@@ -79,13 +80,48 @@ Softcut commands:
 - `)` : Randomly change pan position (R)
 - `::` : Toggle recording on/off
 
-Crow commands:
+__Crow commands__
 
 - `T` : Sends pulse to crow output 1
 - `V` : Sends random voltage (0-10v) to crow output 2
 
 > <sup>1</sup> These commands are disabled if the clock param is set to `crow in 1` <br>
 > <sup>2</sup> The `+`, `-`, and `!` commands move within a range of pre-set rates: { -2x, -1x, -0.5x, 0.5x, 1x, 2x }
+
+-----
+
+#### Grid Control
+
+With a grid connected, Compass gains a new performance dimension. Immediate, tactile control of both common and new functions, combined with the inclusion of pattern recorders, helps to build evolving sequences of layered sound.
+
+[insert svg]
+
+Compass' familiar visual layout is mimicked on the grid. The buffers are mapped to rows `D` and `E`, and the command sequence is mapped to row `G`. Bright lights indicate - you guessed it - the position of the play/record heads in rows `D` and `E`, and the active command in row `G`. An `ALT` key (`H1`) is available for various functions, which we'll explore shortly.
+
+__Buffers__
+
+Though limited by the resolution of the grid, the approximate position of each buffer's play/record head can be modified by simply...mashing on some keys in rows `D` and `E`.
+
+__Commands & Clock__
+
+Any command can be fired manually by pressing its corresponding grid key. To facilitate this kind of manual playing, Compass' internal clock can be stopped (and started again) by pressing the `Clock` key (`H16`). Note that the `Clock` key is dimmed if the clock is stopped.
+
+To quickly adjust the length of the command sequence, hold the `ALT` key (`H1`) while selecting a key in row `G`.
+
+__Pattern Recorders__
+
+In row `A`, you'll find two banks of pattern recorders:
+
+- The first (`A1-4`) records key presses in the buffer rows (`D` and `E`)
+- The second (`A13-16`) records key presses in the command row (`G`)
+
+To record a pattern, press a key. When you've finished playing your pattern, press the key again to commit it to memory and to start playback. To _stop_ pattern playback, simply press the key again. To _clear_ a pattern, press its key while holding the `ALT` key.
+
+All of these various states have corresponding brightness levels:
+
+- High: recording/playback in progress
+- Medium: pattern stored and playback stopped
+- Low: pattern slot empty
 
 -----
 
@@ -106,29 +142,40 @@ Crow commands:
 
 #### Additional Parameters
 
-Head to Norns' `params` menu for these additional parameters:
+Head to Norns' `params` menu for these additional parameters
 
-- __Recording__
-  - `INPUT` (Stereo or Mono)
-  - `RECORD LEVEL` (0 - 1)
-  - `OVERDUB` (0 - 1)
-  - `BIT DEPTH`
-- __Buffers__
-  - `RATE (COARSE)` (-2 - 2, in 0.25 increments)
-  - `RATE (SLEW)` (0s - 2s)
-  - `FADE` (0s - 1s ; adjust crossfade when changing position)
-  - `PAN(R)` (0 - 1)
-  - `PAN(L)` (0 - 1)
-  - `PAN (SLEW)` (0s - 2s)
-  - `START POINT`
-  - `END POINT`
-- __Clocking__
-  - `CLOCK` (Internal or Crow in 1)
-  - `INT. CLOCK SPEED` (1s - 4s)
-- __Crow__
-  - `MODE (INPUT 2)` (see [crow](#crow) section below for details)
-- __Arc__
-  - `ARCIFY PARAMS`
+Head to Norns' `params` menu for your `typical` stuff (rate, pan, overdub, start/end points, etc.) and `spicy` stuff (bit reduction, crow input mode, etc.)
+
+__Recording__
+
+- `Input` (Stereo or Mono)
+- `Record Level` (0 - 1)
+- `Overdub` (0 - 1)
+- `Bit depth`
+
+__Buffers__
+
+- `Rate` (-2 - 2, in 0.25 increments)
+- `Rate (slew)` (0s - 2s)
+- `Fade` (0s - 1s ; adjust crossfade when changing position)
+- `Pan (R)` (0 - 1)
+- `Pan (L)` (0 - 1)
+- `Pan (slew)` (0s - 2s)
+- `Start point`
+- `End point`
+
+__Clocking__
+
+- `Clock` (Internal or Crow in 1)
+- `Internal clock speed` (1s - 4s)
+
+__Crow__
+
+- `Mode (input 2)` (see [crow](#crow) section below for details)
+
+__Arc__
+
+- `Arcify params`
 
 -----
 
