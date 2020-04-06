@@ -102,7 +102,7 @@ Compass' screen layout is mimicked on the grid. The buffers are mapped to rows `
 
 __Buffers__
 
-The position of each buffer's read/write head can be changed by simply...mashing on some keys in rows `D` and `E`. 
+The position of each buffer's read/write head can be changed by simply...mashing on some keys in rows `D` and `E`.
 
 __Commands & Clock__
 
@@ -149,46 +149,13 @@ Lastly, the pattern banks actually have 2 different modes, which you can switch 
 
 #### Additional Parameters
 
-Head to Norns' `params` menu for these additional parameters
-
-Head to Norns' `params` menu for your `typical` stuff (rate, pan, overdub, start/end points, etc.) and `spicy` stuff (bit reduction, crow input mode, etc.)
-
-__Recording__
-
-- `Input` (Stereo or Mono)
-- `Record Level` (0 - 1)
-- `Overdub` (0 - 1)
-- `Bit depth`
-
-__Buffers__
-
-- `Rate` (-2 - 2, in 0.25 increments)
-- `Rate (slew)` (0s - 2s)
-- `Fade` (0s - 1s ; adjust crossfade when changing position)
-- `Pan (R)` (0 - 1)
-- `Pan (L)` (0 - 1)
-- `Pan (slew)` (0s - 2s)
-- `Start point`
-- `End point`
-
-__Clocking__
-
-- `Clock` (Internal or Crow in 1)
-- `Internal clock speed` (1s - 4s)
-
-__Crow__
-
-- `Mode (input 2)` (see [crow](#crow) section below for details)
-
-__Arc__
-
-- `Arcify params`
+Head to Norns' `PARAMS` menu for your `typical` stuff (rate, pan, overdub, start/end points, etc.) and `spicy` stuff (bit reduction, crow input mode, etc.)
 
 -----
 
 #### Crow
 
-A [monome crow](https://monome.org/docs/crow/) can be connected for further control. Its first input can be used to clock Compass' command sequence (see the [clock](#clock) section above), while the second input can be configured in the `params` menu as follows:
+[Crow](https://monome.org/docs/crow/) can be connected for further control. Its first input can be used to clock Compass' command sequence (see the [CLOCK](#clock) section above), while the second input can be configured in the `params` menu as follows:
 
 - `OFF` (default): If you don't have a crow, or you aren't using input 2 for anything, leave this as is.
 - `SC LEVEL`: Send a voltage source to modulate softcut's level. Range: __0v to +5v__
