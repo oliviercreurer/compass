@@ -17,7 +17,7 @@
 -- K1 + E2 : set loop start
 -- K1 + E3 : set loop end
 
-engine.name = "Decimatec"
+-- engine.name = "Decimatec"
 g = grid.connect()
 sc = softcut
 
@@ -47,8 +47,6 @@ local last = 1
 local pageNum = 1
 local rateSlew = 0.1
 
-local crossTalk = 0
-
 local down_time = 0
 local KEYDOWN1 = 0
 local KEYDOWN2 = 0
@@ -62,6 +60,8 @@ local step = {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}
 
 local Arcify = include("lib/arcify")
 local arcify = Arcify.new()
+
+
 
 function update_positions(i,x)
   redraw()
@@ -80,10 +80,8 @@ function update_positions(i,x)
     sc.loop_start(i,loopStart)
     sc.loop_end(i,loopEnd)
     sc.fade_time(i,fade)
-    sc.pan(1,panL)
-    sc.pan(2,panR)
-    -- sc.level_cut_cut(1,2,crossTalk)
-    -- sc.level_cut_cut(2,1,crossTalk)
+    sc.pan(1,panR)
+    sc.pan(2,panL)
   end
   setn(step,STEPS)
 end
@@ -203,20 +201,29 @@ local grid_pattern = {}
 
 function init()
 
-  -- PATTERN RECORDERS
   for i=1,4 do
     grid_pattern[i] = pattern_time.new()
-    grid_pattern[i].process = execute_pattern_a
+    grid_pattern[i].process = grid_pattern_execute
   end
 
   for i=13,16 do
     grid_pattern[i] = pattern_time.new()
-    grid_pattern[i].process = execute_pattern_b
+    grid_pattern[i].process = grid_pattern_execute_comm
   end
 
   grid_redraw()
 
+  -- grid_pattern1 = pattern_time.new()
+  -- grid_pattern2 = pattern_time.new()
+  -- grid_pattern3 = pattern_time.new()-- establish a pattern recorder
+  -- grid_pattern1.process = grid_pattern_execute
+  -- grid_pattern2.process = grid_pattern_execute
+  -- grid_pattern3.process = grid_pattern_execute-- assign the function to be executed when the pattern plays back
+  -- grid_redraw()
+
+
   -- PARAMS
+
 
   params:add_group("COMPASS",31)
   params:add_separator("RECORDING")
@@ -226,8 +233,8 @@ function init()
   params:set_action("Record Level", function(x) for i=1,2 do sc.rec_level(i,x) end  end)
   params:add_control("Overdub","Overdub",controlspec.new(0,1,'lin',0.01,1))
   params:set_action("Overdub", function(x) pre = x  end)
-  params:add_control("Bit depth", "Bit depth", controlspec.new(4, 31, "lin", 0, 31, ''))
-  params:set_action("Bit depth", function(x) engine.sdepth(x) end)
+  -- params:add_control("Bit depth", "Bit depth", controlspec.new(4, 31, "lin", 0, 31, ''))
+  -- params:set_action("Bit depth", function(x) engine.sdepth(x) end)
 
   params:add_separator("BUFFERS")
   -- params:add_group("BUFFERS",8)
@@ -251,9 +258,6 @@ function init()
   params:set_action("Start point", function(x) sPoint = util.clamp(x,1,ePoint-1); loopStart = sPoint end)
   params:add_control("End point","End point",controlspec.new(sPoint+1,65,'lin',1,65))
   params:set_action("End point", function(x) ePoint = util.clamp(x,sPoint+1,65); loopEnd = ePoint end)
-  params:add_control("Crosstalk","Crosstalk",controlspec.new(0,1,'lin',0.01,0.00))
-  params:set_action("Crosstalk", function(x) crossTalk = x  end)
-
 
   params:add_separator("CLOCKING")
   params:add_option("Clock", "Clock", {"Internal", "crow in 1"},1)
@@ -272,9 +276,14 @@ function init()
   arcify:add_params()
 
   -- send audio input to sc input + adjust cut volume
-  audio.level_cut(0.75)
+  audio.level_cut(1)
   audio.level_adc_cut(1)
   audio.level_eng_cut(1)
+
+  -- PATTERN
+
+
+  -- compat.init()
 
   -- METROS
 
@@ -310,13 +319,11 @@ function init()
     -- sc.rec_level(i,1)
     sc.pre_level(i,pre)
     sc.rec(i,1)
-    sc.pan(1,panL)
-    sc.pan(2,panR)
+    sc.pan(1,panR)
+    sc.pan(2,panL)
     sc.rate(i,1)
     sc.phase_quant(i,0.03)
     sc.rate_slew_time(i,rateSlew)
-    sc.level_cut_cut(1,2,crossTalk)
-    sc.level_cut_cut(2,1,crossTalk)
   end
   -- set PRE filter
   for i=1,2 do
@@ -354,7 +361,7 @@ end
 
 -- Reset functions
 
-function command_reset()
+function commReset()
   ratePos = 5
   for i=1,#step do
     step[i] = 1
@@ -365,7 +372,7 @@ function command_reset()
   end
 end
 
-function sc_reset()
+function cutReset()
   for i=1,2 do
     sc.position(i,loopStart)
     sc.rate(i,1)
@@ -420,13 +427,24 @@ function enc(n,d)
   redraw()
 end
 
+function saveComm()
+  newComm = {}
+  for i=1,STEPS do
+    table.insert(newComm,act[step[i]])
+  end
+  tab.save(newComm,"home/we/dust/data/compass/newComm")
+end
+
 function key(n,z)
   if n == 1 then
     KEYDOWN1 = z
   elseif n == 2 then
     KEYDOWN2 = z
     if KEYDOWN1 == 1 then
-      command_reset()
+      commReset()
+    end
+    if z == 1 then
+      saveComm()
     end
   elseif n == 3 then
     if z == 1 then
@@ -440,7 +458,7 @@ function key(n,z)
         recLevel = 1 - recLevel
       elseif hold_time > 1 then
         for i=1,#step do
-          sc_reset()
+          cutReset()
         end
       end
     end
@@ -448,54 +466,56 @@ function key(n,z)
   redraw()
 end
 
--- GRID
+-- GRID ---------------------------------------------
 
 -- local gridRate = 10
-local grid_alt = 0
-local metro_state = 1
+local gridALT = 0
+local metroState = 1
 local pattern_mode = 0
 
 function patternbank_a(x,y,z)
   for i=1,4 do
     if z == 1 and y == 1 and x == i then
-      if grid_alt == 0 then
-        if grid_pattern[i].rec == 1 then
-          grid_pattern[i]:rec_stop()
-          grid_pattern[i]:start()
-        elseif grid_pattern[i].count == 0 then
-          grid_pattern[i]:rec_start()
-        elseif grid_pattern[i].play == 1 then
-          grid_pattern[i]:stop()
-        else
-          grid_pattern[i]:start()
+      if gridALT == 0 then
+        if grid_pattern[i].rec == 1 then -- if we're recording...
+          grid_pattern[i]:rec_stop() -- stop recording
+          grid_pattern[i]:start() -- start playing
+        elseif grid_pattern[i].count == 0 then -- otherwise, if there are no events recorded..
+          grid_pattern[i]:rec_start() -- start recording
+        elseif grid_pattern[i].play == 1 then -- if we're playing...
+          grid_pattern[i]:stop() -- stop playing
+        else -- if by this point, we're not playing...
+          grid_pattern[i]:start() -- start playing
         end
-      elseif grid_alt == 1 then
-        grid_pattern[i]:rec_stop()
-        grid_pattern[i]:stop()
-        grid_pattern[i]:clear()
-        g:all(0)
+      elseif gridALT == 1 then -- the key to the right of the pattern control key...
+          -- local active = x
+          grid_pattern[i]:rec_stop() -- stops recording
+          grid_pattern[i]:stop() -- stops playback
+          grid_pattern[i]:clear() -- clears the pattern
+          g:all(0) -- clear the grid
+        -- end
       end
     end
     if pattern_mode == 0 then
       if z == 1 and y == 1 and x ~= i and x < 5 then
-        if grid_alt == 0 then
+        if gridALT == 0 then
           grid_pattern[i]:stop()
         end
       end
     else
       if z == 1 and y == 1 and x ~= i then
-        if grid_alt == 0 then
+        if gridALT == 0 then
           grid_pattern[i]:stop()
         end
       end
     end
   end
   for i=1,4 do
-    if z == 1 and y ~= 8 then
-      record_this = {}
-      record_this.x = x
-      record_this.y = y
-      grid_pattern[i]:watch(record_this)
+    if z == 1 and y ~= 8 then -- if we press any key above the bottom row...
+      record_this = {} -- create a table called "record_this" to put our events!
+      record_this.x = x -- here's an event, the key's x position
+      record_this.y = y -- here's another event, the key's y position
+      grid_pattern[i]:watch(record_this) -- tell the pattern recorder to watch these events + commit them to memory
       g:all(0)
       g:led(x,y,z*15)
     end
@@ -505,44 +525,46 @@ end
 function patternbank_b(x,y,z)
   for i=13,16 do
     if z == 1 and y == 1 and x == i then
-      if grid_alt == 0 then
-        if grid_pattern[i].rec == 1 then
-          grid_pattern[i]:rec_stop()
-          grid_pattern[i]:start()
-        elseif grid_pattern[i].count == 0 then
-          grid_pattern[i]:rec_start()
-        elseif grid_pattern[i].play == 1 then
-          grid_pattern[i]:stop()
-        else
-          grid_pattern[i]:start()
+      if gridALT == 0 then
+        if grid_pattern[i].rec == 1 then -- if we're recording...
+          grid_pattern[i]:rec_stop() -- stop recording
+          grid_pattern[i]:start() -- start playing
+        elseif grid_pattern[i].count == 0 then -- otherwise, if there are no events recorded..
+          grid_pattern[i]:rec_start() -- start recording
+        elseif grid_pattern[i].play == 1 then -- if we're playing...
+          grid_pattern[i]:stop() -- stop playing
+        else -- if by this point, we're not playing...
+          grid_pattern[i]:start() -- start playing
         end
-      elseif grid_alt == 1 then
-        grid_pattern[i]:rec_stop()
-        grid_pattern[i]:stop()
-        grid_pattern[i]:clear()
-        g:all(0)
+      elseif gridALT == 1 then -- the key to the right of the pattern control key...
+          -- local active = x
+          grid_pattern[i]:rec_stop() -- stops recording
+          grid_pattern[i]:stop() -- stops playback
+          grid_pattern[i]:clear() -- clears the pattern
+          g:all(0) -- clear the grid
+        -- end
       end
     end
     if pattern_mode == 0 then
       if z == 1 and y == 1 and x ~= i and x > 12 then
-        if grid_alt == 0 then
+        if gridALT == 0 then
           grid_pattern[i]:stop()
         end
       end
     else
       if z == 1 and y == 1 and x ~= i then
-        if grid_alt == 0 then
+        if gridALT == 0 then
           grid_pattern[i]:stop()
         end
       end
     end
   end
   for i=13,16 do
-    if z == 1 and y ~= 8 then
-      record_this = {}
-      record_this.x = x
-      record_this.y = y
-      grid_pattern[i]:watch(record_this)
+    if z == 1 and y ~= 8 then -- if we press any key above the bottom row...
+      record_this = {} -- create a table called "record_this" to put our events!
+      record_this.x = x -- here's an event, the key's x position
+      record_this.y = y -- here's another event, the key's y position
+      grid_pattern[i]:watch(record_this) -- tell the pattern recorder to watch these events + commit them to memory
       g:all(0)
       g:led(x,y,z*15)
     end
@@ -552,47 +574,50 @@ end
 g.key = function(x,y,z)
   patternbank_a(x,y,z)
   patternbank_b(x,y,z)
-  if x == 1 and y == 8 then
-    grid_alt = z
-  end
-  if z == 1 then
-    if x == 16 and y == 8 then
-      metro_state = 1 - metro_state
-      if metro_state == 1 then
-        m:start()
-      else
-        m:stop()
-      end
-    elseif x == 1 and y == 2 then
-      pattern_mode = 1 - pattern_mode
-      print(pattern_mode)
-    elseif x > 0 and y == 7 then
-      if grid_alt == 1 then
-        STEPS = x
-      else
-        pos = x-1
-        count()
-      end
-    elseif y == 4 then
-      sc.position(1,math.floor((x*65)/16)-3)
-    elseif y == 5 then
-      sc.position(2,math.floor((x*65)/16)-3)
-    -- elseif y == 8 then
-    --   if x >= 6 and x <= 11 then
-    --     gridRate = x
-    --     for i=1,2 do
-    --       sc.rate(i,rates[x-5])
-    --     end
-    --   end
+  -- if grid_pattern.play == 0 then
+    if x == 1 and y == 8 then
+      gridALT = z
     end
-  end
+    if z == 1 then
+      if x == 16 and y == 8 then
+        metroState = 1 - metroState
+        if metroState == 1 then
+          m:start()
+        else
+          m:stop()
+        end
+      elseif x == 1 and y == 2 then
+        pattern_mode = 1 - pattern_mode
+        print(pattern_mode)
+      elseif x > 0 and y == 7 then
+        if gridALT == 1 then
+          STEPS = x
+        else
+          pos = x-1
+          count()
+        end
+
+      elseif y == 4 then
+        sc.position(1,math.floor((x*65)/16)-3)
+      elseif y == 5 then
+        sc.position(2,math.floor((x*65)/16)-3)
+      -- elseif y == 8 then
+      --   if x >= 6 and x <= 11 then
+      --     gridRate = x
+      --     for i=1,2 do
+      --       sc.rate(i,rates[x-5])
+      --     end
+      --   end
+      end
+    end
+  -- end
   redraw()
   -- print(gridRate)
 end
 
-function execute_pattern_a(recorded)
+function grid_pattern_execute(recorded) -- when the pattern plays back, do the following with each entry we recorded in 31-35
   g:all(0)
-  g:led(recorded.x,recorded.y,15)
+  g:led(recorded.x,recorded.y,15) -- remember "record_this.x" and "record_this.y"? here, we're using that data and doing something with it!
   grid_redraw()
   g:refresh()
   if recorded.y == 4 then
@@ -608,55 +633,57 @@ function execute_pattern_a(recorded)
   end
 end
 
-function execute_pattern_b(recorded)
-  g:all(0)
-  g:led(recorded.x,recorded.y,15)
-  grid_redraw()
-  g:refresh()
-  if recorded.y == 7 then
-    pos = recorded.x-1
-    count()
-  end
-  if pattern_mode == 1 then
-    if recorded.y == 4 then
-      sc.position(1,math.floor((recorded.x*65)/16)-3)
-    elseif recorded.y == 5 then
-      sc.position(2,math.floor((recorded.x*65)/16)-3)
+function grid_pattern_execute_comm(recorded)
+  -- if pattern_mode == 0 then
+    g:all(0)
+    g:led(recorded.x,recorded.y,15) -- remember "record_this.x" and "record_this.y"? here, we're using that data and doing something with it!
+    grid_redraw()
+    g:refresh()
+    if recorded.y == 7 then
+      pos = recorded.x-1
+      count()
     end
-  end
+    if pattern_mode == 1 then
+      if recorded.y == 4 then
+        sc.position(1,math.floor((recorded.x*65)/16)-3)
+      elseif recorded.y == 5 then
+        sc.position(2,math.floor((recorded.x*65)/16)-3)
+      end
+    end
+  -- end
 end
 
 function grid_redraw()
   g:all(0)
   for i=1,4 do
-    if grid_pattern[i].rec == 1 then
-      g:led(i,1,10)
-    elseif grid_pattern[i].play == 1 then
-      g:led(i,1,15)
-    elseif grid_pattern[i].play == 0 and grid_pattern[i].count > 0 then
-      g:led(i,1,5)
-    else
-      g:led(i,1,3)
+    if grid_pattern[i].rec == 1 then -- if we're recording...
+      g:led(i,1,10) -- medium-high brightness
+    elseif grid_pattern[i].play == 1 then -- if we're playing...
+      g:led(i,1,15) -- highest brightness
+    elseif grid_pattern[i].play == 0 and grid_pattern[i].count > 0 then -- if we're not playing, but the pattern isn't empty...
+      g:led(i,1,5) -- lower brightness
+    else -- otherwise, if we're not recording/playing and the pattern is empty...
+      g:led(i,1,3) -- lowest brightness
     end
   end
 
   for i=13,16 do
-    if grid_pattern[i].rec == 1 then
-      g:led(i,1,10)
-    elseif grid_pattern[i].play == 1 then
-      g:led(i,1,15)
-    elseif grid_pattern[i].play == 0 and grid_pattern[i].count > 0 then
-      g:led(i,1,5)
-    else
-      g:led(i,1,3)
+    if grid_pattern[i].rec == 1 then -- if we're recording...
+      g:led(i,1,10) -- medium-high brightness
+    elseif grid_pattern[i].play == 1 then -- if we're playing...
+      g:led(i,1,15) -- highest brightness
+    elseif grid_pattern[i].play == 0 and grid_pattern[i].count > 0 then -- if we're not playing, but the pattern isn't empty...
+      g:led(i,1,5) -- lower brightness
+    else -- otherwise, if we're not recording/playing and the pattern is empty...
+      g:led(i,1,3) -- lowest brightness
     end
   end
 
-  local grid_start_point = util.clamp(math.abs(math.floor(sPoint*16/65)+1),1,16)
-  local grid_end_point = util.clamp(math.abs(math.floor(ePoint*16/65)+1),1,16)
+  local gStart = util.clamp(math.abs(math.floor(sPoint*16/65)+1),1,16)
+  local gEnd = util.clamp(math.abs(math.floor(ePoint*16/65)+1),1,16)
   -- clock led
   g:led(1,8,5)
-  g:led(16,8,metro_state*3+3)
+  g:led(16,8,metroState*3+3)
   -- pattern mode led
   g:led(1,2,pattern_mode*3+3)
   for i=1,16 do
@@ -665,7 +692,7 @@ function grid_redraw()
   for i=1,STEPS do
     g:led(i,7,i==pos and 15 or 5)
   end
-  for i=grid_start_point,grid_end_point do
+  for i=gStart,gEnd do
     g:led(i,4,i==util.clamp(math.abs(math.floor((positions[1]*16)/65)+1),1,16) and 15 or 5)
     g:led(i,5,i==util.clamp(math.abs(math.floor((positions[2]*16)/65)+1),1,16) and 15 or 5)
   end
