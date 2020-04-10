@@ -4,8 +4,9 @@ __Compass__ is an asynchronous looper for [monome norns](https://monome.org/docs
 
 ----
 
-- [Input Routing & Recording](#input-routing-and-recording)&nbsp;
+- [Input Routing & Recording](#input-routing-and-recording)
 - [Sequencing](#sequencing)
+- [Pages](#pages)
 - [Clock](#clock)
 - [Commands](#commands)
 - [Grid Control](#grid-control)
@@ -19,9 +20,9 @@ __Compass__ is an asynchronous looper for [monome norns](https://monome.org/docs
 
 Compass assumes a stereo source by default. If using a mono source:
 
-- head to the system-wide `params` menu once Compass is loaded and change your input source accordingly
-- be sure to plug your source into the _left_ input
-- set proper monitoring in Norns' `system/audio` settings
+- head to the system-wide `PARAMS` menu once Compass is loaded and change your input source accordingly
+- be sure to plug your source into [input 1](https://monome.org/docs/norns/play/)
+- set proper monitoring in Norns' `SYSTEM/AUDIO` settings
 
 By default, Compass records your audio source into two 64s buffers, though a smaller recording window can be set if desired. With a stereo source, each input is paired with a buffer; with a mono source, the input is recorded to both buffers. Stereo effects are then possible with either source type as the read/write heads for each buffer can be split apart by various commands.
 
@@ -40,6 +41,35 @@ Compass' sequencer moves through commands of your choosing that trigger differen
 Compass' audio buffers and its sequencer each have their own sense of time in order to facilitate experimentation. Interesting effects and textures can be created by recording into loops long and short, randomizing commands on the fly, modifying the sequence length, etc.
 
 The two buffers are purposefully long, allowing sounds to travel freely to different regions during recording and playback. Unexpected (and hopefully interesting!) things can happen as the two record/playback heads are independently modulated.
+
+-----
+
+#### Pages, Keys & Encoders
+
+Use `E1` to switch between Compass' two pages. The first displays the buffers (and the position of each one's corresponding read/write head) along with the command sequence at the bottom of the screen:
+
+[insert img]
+
+- `E2` : Navigate to step in command row
+- `E3` : Select command at step (hold `K2` to prevent unwanted commands from being fired while selecting)
+- `K1 + K2` : reset command row to default state (does *not* affect softcut buffers)
+- `K1 + K3` : randomize all commands
+- `K3` (short) : toggle recording on/off
+- `K3` (long) : clear both softcut buffers (does *not* affect command row)
+- `K1` (hold) + `E1` : set # of steps in sequence (2 - 16) -- this can also be set via a connected [grid](#grid-control)
+- `K1` (hold) + `E2` : set start point
+- `K1` (hold) + `E3` : set end point
+
+On the second page, all commands are displayed with a corresponding description for quick reference. Here, you can also toggle commands on/off -- turning them off excludes them from your command sequence on page 1.
+
+[insert gif]
+
+- `E2` : Navigate to command (its description is printed at the bottom of the screen)
+- `K2` : Toggle selected command on/off. This can also be set via a connected [grid](#grid-control)
+
+> __Note!__ If you want to exclude certain commands from your sequence, do so at the beginning of your session -- anytime a command is toggled on/off on page 2, the command sequence is reset to prevent weird states.
+
+
 
 -----
 
@@ -98,7 +128,7 @@ Connecting a grid opens Compass up to new performance possibilities. Commands an
 
 [insert svg]
 
-Compass' screen layout is mimicked on the grid. The buffers are mapped to rows `D` and `E`, and the command sequence is mapped to row `G`. Bright lights indicate - you guessed it - the position of the read/write heads in rows `D` and `E`, and the active command in row `G`. An `ALT` key (`H1`) is available for various functions, which we'll explore shortly.
+On Compass' first page, its screen layout is mimicked on the grid. The buffers are mapped to rows `D` and `E`, and the command sequence is mapped to row `G`. Bright lights indicate - you guessed it - the position of the read/write heads in rows `D` and `E`, and the active command in row `G`. An `ALT` key (`H1`) is available for various functions, which we'll explore shortly.
 
 __Buffers__
 
@@ -129,6 +159,8 @@ Lastly, the pattern banks actually have 2 different modes, which you can switch 
 
 - In `PATTERN MODE 1` (`B1` key is dim), both of the pattern banks are decoupled, meaning you can have a buffer pattern and a command pattern playing simultaneously and asynchronously.
 - In `PATTERN MODE 2` (`B1` key is bright), all 8 patterns slots record presses in both the buffer and command rows. Use this mode is you want your commands and your buffer positions synced.
+
+When navigating to Compass' second page, the grid is redrawn -- the two rows of commands displayed on the screen are mapped to rows `D` and `E`. Press on any lit grid key to print the description for its corresponding command. To toggle a command on/off, hold the `ALT` key (`H1`) while pressing its corresponding grid key.
 
 -----
 
