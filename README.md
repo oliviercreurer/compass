@@ -111,6 +111,7 @@ __Softcut commands__
 - `(` : Randomly change pan position (L)
 - `)` : Randomly change pan position (R)
 - `::` : Toggle recording on/off
+- `/` : Toggle softcut level on/off
 
 __Crow commands__
 
@@ -125,8 +126,6 @@ __Crow commands__
 #### Grid Control
 
 Connecting a grid opens Compass up to new performance possibilities. Commands and buffers can be controlled by hand, and all of your gestures can be captured by pattern recorders to build evolving sequences of layered sound.
-
-[insert svg]
 
 On Compass' first page, its screen layout is mimicked on the grid. The buffers are mapped to rows `D` and `E`, and the command sequence is mapped to row `G`. Bright lights indicate - you guessed it - the position of the read/write heads in rows `D` and `E`, and the active command in row `G`. An `ALT` key (`H1`) is available for various functions, which we'll explore shortly.
 
