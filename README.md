@@ -147,13 +147,7 @@ In row `A`, you'll find two banks of pattern recorders:
 - The first (`A1-4`) records key presses in the buffer rows (`D` and `E`)
 - The second (`A13-16`) records key presses in the command row (`G`)
 
-To record a pattern, press any key in the pattern bank. When you've finished playing your pattern, press the same key again to commit it to memory and to start playback. To _stop_ pattern playback, simply press the active pattern key again. To _clear_ a pattern, press its key while holding the `ALT` key.
-
-All of these various states have corresponding brightness levels:
-
-- High: recording/playback in progress
-- Medium: pattern stored but playback stopped
-- Low: pattern slot empty
+To __record__ a pattern, press a key in either pattern bank (_The chosen key's led will pulse to indicate recording is in progress_). To __start__ playback, press the key again (_led at max brightness_). To __stop__ playback, simply press the key again (_led at low brightness_). To __clear__ a pattern, press its key while holding the `ALT` key (_led at lowest brightness_).  
 
 Lastly, the pattern banks actually have 2 different modes, which you can switch between using the `PATTERN MODE` key at `B1.`
 
