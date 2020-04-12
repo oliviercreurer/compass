@@ -6,7 +6,7 @@ __Compass__ is an asynchronous looper for [monome norns](https://monome.org/docs
 
 - [Input Routing & Recording](#input-routing-and-recording)
 - [Sequencing](#sequencing)
-- [Pages](#pages)
+- [Pages, Keys & Encoders](#pages)
 - [Clock](#clock)
 - [Commands](#commands)
 - [Grid Control](#grid-control)
@@ -67,7 +67,7 @@ On the second page, all commands are displayed with a corresponding description 
 - `E2` : Navigate to command (its description is printed at the bottom of the screen)
 - `K2` : Toggle selected command on/off. This can also be set via a connected [grid](#grid-control)
 
-> __Note!__ If you want to exclude certain commands from your sequence, do so at the beginning of your session -- anytime a command is toggled on/off on page 2, the command sequence is reset to prevent weird states.
+> __Note!__ Toggling any command on/off on page 2 will clear your existing commands! It is recommended you set up your command list _before_ you start modifying the command sequence.
 
 
 
