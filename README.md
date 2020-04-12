@@ -1,4 +1,4 @@
-### Compass (v2.2)
+### Compass (v3.2)
 
 __Compass__ is an asynchronous looper for [monome norns](https://monome.org/docs/norns/) built around the concept of a command sequencer. Commands (assigned per step in the bottom row of the `EDIT` page) modulate sequence, recording, playback and looping behaviors.
 
@@ -10,7 +10,6 @@ __Compass__ is an asynchronous looper for [monome norns](https://monome.org/docs
 - [Clock](#clock)
 - [Commands](#commands)
 - [Grid Control](#grid-control)
-- [Keys & Encoders](#keys-and-encoders)
 - [Additional Parameters](#additional-parameters)
 - [Crow](#crow)
 
@@ -154,21 +153,6 @@ Lastly, the pattern banks actually have 2 different modes, which you can switch 
 - In `PATTERN MODE 2` (`B1` key is bright), all 8 patterns slots record presses in both the buffer and command rows. Use this mode is you want your commands and your buffer positions synced.
 
 When navigating to Compass' second page, the grid is redrawn -- the two rows of commands displayed on the screen are mapped to rows `D` and `E`. Press on any lit grid key to print the description for its corresponding command. To toggle a command on/off, hold the `ALT` key (`H1`) while pressing its corresponding grid key.
-
------
-
-#### Keys and Encoders
-
-- `E1` : Scroll between the `EDIT` and `REFERENCE` pages
-- `E2` : Navigate to step in command row
-- `E3` : Select command at step (hold `K2` to prevent unwanted commands from being fired while selecting)
-- `K1 + K2` : reset command row to default state (does *not* affect softcut buffers)
-- `K1 + K3` : randomize all commands
-- `K3` (short) : toggle recording on/off
-- `K3` (long) : clear both softcut buffers (does *not* affect command row)
-- `K1` (hold) + `E1` : set # of steps in sequence (2 - 16)
-- `K1` (hold) + `E2` : set start point
-- `K1` (hold) + `E3` : set end point
 
 -----
 
