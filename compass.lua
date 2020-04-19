@@ -23,11 +23,7 @@ sc = softcut
 
 pattern_time = require 'pattern_time'
 
-local rate = 1
-local ratePos = 5
-local rec = 0
 local recLevel = 0
-local pre = 1
 local pos = 1
 local edit = 1
 local clkSpd = 1
@@ -42,9 +38,7 @@ local loopEnd = loopLength+1
 local ePoint = loopLength+1
 
 local fade = 0.05
-local panL = -0.5
-local panR = 0.5
-local last = 1
+
 local pageNum = 1
 local rateSlew = 0.1
 
@@ -77,7 +71,7 @@ function update_positions(i,x)
     if recLevel == 0 then
       sc.pre_level(i,1)
     else
-      sc.pre_level(i,pre)
+      sc.pre_level(i,params:get("Overdub"))
     end
     sc.level(i,mute_sc)
     sc.rate_slew_time(i,rateSlew)
@@ -85,8 +79,6 @@ function update_positions(i,x)
     sc.loop_start(i,loopStart)
     sc.loop_end(i,loopEnd)
     sc.fade_time(i,fade)
-    sc.pan(1,panR)
-    sc.pan(2,panL)
   end
   setn(step,STEPS)
   COMMANDS = #act
@@ -105,9 +97,9 @@ end
 
 function mono()
   --set sc to mono input
-  sc.level_input_cut(1, 1, 1)
+  sc.level_input_cut(1, 1, 0.5)
   sc.level_input_cut(2, 1, 0)
-  sc.level_input_cut(1, 2, 1)
+  sc.level_input_cut(1, 2, 0.5)
   sc.level_input_cut(2, 2, 0)
 end
 
@@ -158,8 +150,8 @@ function rateRnd() for i=1,2 do sc.rate(i,rates[math.random(1,6)]) end end
 function sPosStart() for i=1,2 do sc.position(i,loopStart) end end
 function sPosRnd() for i=1,2 do sc.position(i,math.random(loopStart,loopEnd)) end end
 function loopRnd() loopStart = math.random(sPoint,loopEnd-1) ; loopEnd = math.random(loopStart+1,ePoint) end
-function rndPanL() panL = math.random(0,8)/-10 end
-function rndPanR() panR = math.random(0,8)/10 end
+function rndPanL() params:set("Pan (L)",math.random(0,8)/-10) end
+function rndPanR() params:set("Pan (R)",math.random(0,8)/10) end
 function toggleRec() recLevel = 1 - recLevel end
 function mute() mute_sc = 1 - mute_sc end
 
@@ -198,6 +190,7 @@ function build_command_list()
       table.insert(act.label,command_list[i][3])
     end
   end
+  mute_sc = 1
 end
 
 local grid_pattern = {}
@@ -226,7 +219,7 @@ function init()
   params:add_control("Record Level","Record level",controlspec.new(0,1,'lin',0.01,1))
   params:set_action("Record Level", function(x) for i=1,2 do sc.rec_level(i,x) end  end)
   params:add_control("Overdub","Overdub",controlspec.new(0,1,'lin',0.01,1))
-  params:set_action("Overdub", function(x) pre = x  end)
+  params:set_action("Overdub", function(x) end) --pre = x
   -- params:add_control("Bit depth", "Bit depth", controlspec.new(4, 31, "lin", 0, 31, ''))
   -- params:set_action("Bit depth", function(x) engine.sdepth(x) end)
 
@@ -242,9 +235,9 @@ function init()
   params:add_control("Fade","Fade",controlspec.new(0,1,'lin',0.01,0.05))
   params:set_action("Fade", function(x) fade = x  end)
   params:add_control("Pan (R)", "Pan (R)", controlspec.new(-1,1,'lin',0.01,0.5))
-  params:set_action("Pan (R)", function(x) panR = x end)
+  params:set_action("Pan (R)", function(x) sc.pan(1,x) end) --panR = x
   params:add_control("Pan (L)", "Pan (L)", controlspec.new(-1,1,'lin',0.01,-0.5))
-  params:set_action("Pan (L)", function(x) panL = x end)
+  params:set_action("Pan (L)", function(x) sc.pan(2,x) end) --panL = x
   params:add_control("Pan slew", "Pan (slew)", controlspec.new(0,2,'lin', 0.01,0.25))
   params:set_action("Pan slew", function(x) for i=1,2 do sc.pan_slew_time(i,x) end end)
 
@@ -306,14 +299,19 @@ function init()
     sc.position(i,1)
     sc.play(i,1)
     sc.fade_time(i,fade)
-    sc.pre_level(i,pre)
+    sc.pre_level(i,params:get("Overdub"))
     sc.rec(i,1)
-    sc.pan(1,panR)
-    sc.pan(2,panL)
+    sc.pan(1,params:get("Pan (R)"))
+    sc.pan(2,params:get("Pan (L)"))
     sc.rate(i,1)
     sc.phase_quant(i,0.03)
     sc.rate_slew_time(i,rateSlew)
     sc.level_slew_time(i,0.10)
+    sc.pre_filter_dry(i, 1)
+    sc.pre_filter_lp(i, 0)
+    sc.pre_filter_hp(i, 0)
+    sc.pre_filter_bp(i, 0)
+    sc.pre_filter_br(i, 0)
   end
   -- set PRE filter
   -- for i=1,2 do
@@ -343,7 +341,7 @@ end
 
 -- RESET FUNCTIONS
 function commReset()
-  ratePos = 5
+  -- ratePos = 5
   for i=1,#step do
     step[i] = 1
   end
