@@ -1,5 +1,5 @@
 --
--- Compass (3.0) -- PLAY/EDIT MODES
+-- Compass (3.0) -- MODES COMPLETE
 -- Command-based looper
 -- @olivier
 -- llllllll.co/t/compass/25192
