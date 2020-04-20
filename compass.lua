@@ -47,7 +47,7 @@ local KEYDOWN2 = 0
 local key_mode = 0
 local edit_lev = 0
 
-local pages = {"", "", ""}
+-- local pages = {"", "", ""}
 local positions = {0,0}
 local rate_pos = 5
 local rates = {-2,-1,-0.5,0.5,1,2}
@@ -363,8 +363,8 @@ end
 
 function enc(n,d)
   if n==1 then
-    if pageNum == 2 then
-      STEPS = util.clamp(STEPS+d,2,16)
+    if key_mode == 1 then
+      pageNum = util.clamp(pageNum+d,2,4)
     end
   elseif n==2 then
     if pageNum == 1 then
@@ -373,9 +373,13 @@ function enc(n,d)
       end
       edit = util.clamp(edit+d,1,#step)
     elseif pageNum == 2 then
-      params:delta("Start point",d)
-      loopStart = sPoint
-      loop_time = ePoint - sPoint
+      if KEYDOWN2 == 0 then
+        params:delta("Start point",d)
+        loopStart = sPoint
+        loop_time = ePoint - sPoint
+      else
+        STEPS = util.clamp(STEPS+d,2,16)
+      end
     elseif pageNum == 3 then
       edit = util.clamp(edit+d,1,#command_list)
     end
@@ -413,6 +417,7 @@ function key(n,z)
       end
     end
   elseif n == 2 then
+    KEYDOWN2 = z
     if z == 1 then
       down_time = util.time()
     else
@@ -448,13 +453,11 @@ function key(n,z)
           end
         end
       elseif key_mode == 1 and pageNum == 2 then
-        if hold_time < 1 then
-          pageNum = 3
-        else
+        if hold_time > 1 then
           cutReset()
         end
       elseif key_mode == 1 and pageNum == 3 then
-        pageNum = 2
+        -- nothing
       end
     end
   end
@@ -736,6 +739,8 @@ function drawMenu()
         screen.text("| 1")
       elseif pageNum == 3 then
         screen.text("| 2")
+      elseif pageNum == 4 then
+        screen.text("| 3")
       end
     end
     screen.move(124,10)
@@ -912,6 +917,10 @@ function redraw()
   if pageNum == 1 or pageNum == 2 then
     drawEdit()
   elseif pageNum == 3 then
+    drawMenu()
+    drawCommands()
+
+  elseif pageNum == 4 then
     draw_ref()
   end
   screen.stroke()
