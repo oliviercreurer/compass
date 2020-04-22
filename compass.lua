@@ -1,5 +1,5 @@
 --
--- Compass (3.0) -- MODES COMPLETE
+-- Compass (3.0) -- Key/Enc Improvements
 -- Command-based looper
 -- @olivier
 -- llllllll.co/t/compass/25192
@@ -195,6 +195,7 @@ function build_command_list()
     end
   end
   mute_sc = 1
+  -- redraw()
 end
 
 local grid_pattern = {}
@@ -291,6 +292,8 @@ function init()
   crow.output[1].action = "pulse(0.01,7,1)"
   crow.input[2].mode("none")
 
+  norns.enc.sens(1,5) -- set encoder 1 to sensitivity 4 (slower)
+
 	-- softcut
 	sc.buffer_clear()
   for i=1,2 do
@@ -333,6 +336,8 @@ function count()
   redraw()
 end
 
+
+
 -- RESET FUNCTIONS
 function commReset()
   -- ratePos = 5
@@ -362,35 +367,41 @@ end
 -- ENCODERS & KEYS
 
 function enc(n,d)
+  -- ENCODER 1
   if n==1 then
-    if key_mode == 1 then
-      pageNum = util.clamp(pageNum+d,2,4)
-    end
-  elseif n==2 then
-    if pageNum == 1 then
-      if edit > #step then
+    if edit > #step then
         edit = #step
       end
-      edit = util.clamp(edit+d,1,#step)
-    elseif pageNum == 2 then
-      if KEYDOWN2 == 0 then
+    if KEYDOWN1 == 0 then
+      pageNum = util.clamp(pageNum+d,1,3)
+    else
+      if pageNum == 1 then
+        STEPS = util.clamp(STEPS+d,2,16)
+      end
+    end
+  -- ENCODER 2
+  elseif n==2 then
+    if pageNum == 1 then
+      if KEYDOWN1 == 0 then
+        edit = util.clamp(edit+d,1,#step)
+      else
         params:delta("Start point",d)
         loopStart = sPoint
         loop_time = ePoint - sPoint
-      else
-        STEPS = util.clamp(STEPS+d,2,16)
       end
-    elseif pageNum == 3 then
+    elseif pageNum == 2 then
       edit = util.clamp(edit+d,1,#command_list)
     end
-
+  -- ENCODER 3
   elseif n==3 then
     if pageNum == 1 then
-      step[edit] = util.clamp(step[edit]+d, 1, COMMANDS)
-    elseif pageNum == 2 then
-      params:delta("End point",d)
-      loopEnd = ePoint
-      loop_time = ePoint - sPoint
+      if KEYDOWN1 == 0 then
+        step[edit] = util.clamp(step[edit]+d, 1, COMMANDS)
+      else
+        params:delta("End point",d)
+        loopEnd = ePoint
+        loop_time = ePoint - sPoint
+      end
     end
   end
   redraw()
@@ -398,53 +409,38 @@ end
 
 function key(n,z)
   if n == 1 then
-    if z == 1 then
-      down_time = util.time()
-    else
-      hold_time = util.time() - down_time
-      if hold_time > 1 then
-        key_mode = 1 - key_mode
-        if key_mode == 0 then
-          pageNum = 1
-          e:stop()
-          if edit > #step then
-            edit = 1
-          end
-        else
-          pageNum = 2
-          e:start()
-        end
-      end
-    end
+    KEYDOWN1 = z
   elseif n == 2 then
     KEYDOWN2 = z
-    if z == 1 then
-      down_time = util.time()
-    else
-      hold_time = util.time() - down_time
-      if key_mode == 0 and pageNum == 1 then
-        if hold_time < 1 then
-          randomize_steps()
-        else
+    if KEYDOWN1 == 0 then
+      if z == 1 then
+        down_time = util.time()
+      else
+        hold_time = util.time() - down_time
+        if pageNum == 1 then
+          if hold_time < 1 then
+            randomize_steps()
+          else
+            commReset()
+          end
+        elseif pageNum == 2 then
+          command_list[edit][2] = 1 - command_list[edit][2]
+          build_command_list()
           commReset()
+          -- for i=1,#command_list do
+          --   if act[step[i]] == command_list[i][1] then
+          --     if command_list[i][2] == 0 then
+          --       act[step[i]] = act[step[1]]
+          --     end
+          --   end
+          -- end
+        elseif pageNum == 3 then
+
         end
-      elseif key_mode == 1 and pageNum == 2 then
-        -- nothing
-      elseif key_mode == 1 and pageNum == 3 then
-        command_list[edit][2] = 1 - command_list[edit][2]
-        build_command_list()
-        commReset()
       end
-    end
-  elseif n == 3 then
-    if z == 1 then
-      down_time = util.time()
     else
-      hold_time = util.time() - down_time
-      if key_mode == 0 and pageNum == 1 then
-        if hold_time < 1 then
-          recLevel = 1 - recLevel
-        else
+      if z == 1 then
+        if pageNum == 1 then
           metro_state = 1 - metro_state
           if metro_state == 1 then
             m:start()
@@ -452,12 +448,28 @@ function key(n,z)
             m:stop()
           end
         end
-      elseif key_mode == 1 and pageNum == 2 then
-        if hold_time > 1 then
-          cutReset()
+      end
+    end
+
+
+  elseif n == 3 then
+
+    if KEYDOWN1 == 0 then
+      if z == 1 then
+        down_time = util.time()
+      else
+        hold_time = util.time() - down_time
+        if pageNum == 1 then
+          if hold_time < 1 then
+            recLevel = 1 - recLevel
+          else
+            cutReset()
+          end
+        elseif pageNum == 2 then
+          -- future saving/loading stuff
+        elseif pageNum == 3 then
+          -- nothing
         end
-      elseif key_mode == 1 and pageNum == 3 then
-        -- nothing
       end
     end
   end
@@ -606,20 +618,22 @@ g.key = function(x,y,z)
       if x == i+3 and y == 4 and z == 1 then
         if gridALT == 1 then
           command_list[i][2] = 1 - command_list[i][2]
+          build_command_list()
+          commReset()
         end
         edit = x-3
-        build_command_list()
-        commReset()
+
       end
     end
     for i=11,20 do
       if x == ((i-10)+3) and y == 5 and z == 1 then
         if gridALT == 1 then
           command_list[i][2] = 1 - command_list[i][2]
+          build_command_list()
+          commReset()
         end
         edit = x+7
-        build_command_list()
-        commReset()
+
       end
     end
   end
@@ -665,7 +679,7 @@ end
 function grid_redraw()
   g:all(0)
   g:led(1,8,5)
-  if pageNum == 1 or pageNum == 2 then
+  if pageNum == 1 then
     for i=1,4 do
       if grid_pattern[i].rec == 1 then
         g:led(i,1,led_lev)
@@ -707,7 +721,7 @@ function grid_redraw()
       g:led(i,4,i==util.clamp(math.abs(math.floor((positions[1]*16)/65)+1),1,16) and 15 or 5)
       g:led(i,5,i==util.clamp(math.abs(math.floor((positions[2]*16)/65)+1),1,16) and 15 or 5)
     end
-  elseif pageNum == 3 then
+  elseif pageNum == 2 then
     for i=1,10 do
       g:led((i+3),4,(command_list[i][2]*5)+3)
     end
@@ -727,11 +741,11 @@ end
 function drawMenu()
 
     screen.move(2,10)
-    if key_mode == 0 then
+    if pageNum == 1 then
       screen.level(10)
       screen.text("Play")
     else
-      screen.level(edit_lev)
+      screen.level(10)
       screen.text("Edit")
       screen.move(20,10)
       screen.level(1)
@@ -745,10 +759,10 @@ function drawMenu()
     end
     screen.move(124,10)
     screen.level(3)
-    if pageNum == 2 then
-      screen.move(124,10)
+    if KEYDOWN1 == 1 then
+      screen.move(22,10)
       screen.level(2)
-      screen.text_right(loop_time.."s.")
+      screen.text("| "..loop_time.."s.")
     end
 end
 
@@ -774,14 +788,19 @@ function drawCommands()
 
   for i=1,#step do
     screen.move(i*8-8+2,58)
-    if i == edit then
-      screen.level(15)
-    elseif i == pos then
-      screen.level(3)
-    else
-      screen.level(1)
+    if pageNum == 1 then
+      if i == edit then
+        screen.level(15)
+      elseif i == pos then
+        screen.level(3)
+      else
+        screen.level(1)
+      end
+      screen.text(act.label[step[i]])
+    elseif pageNum == 3 then
+      screen.level(10)
+      screen.text(act.label[step[i]])
     end
-    screen.text(act.label[step[i]])
   end
 
 end
@@ -914,14 +933,14 @@ end
 function redraw()
   screen.clear()
   drawMenu()
-  if pageNum == 1 or pageNum == 2 then
+  if pageNum == 1 then
     drawEdit()
+  elseif pageNum == 2 then
+
+    draw_ref()
   elseif pageNum == 3 then
     drawMenu()
     drawCommands()
-
-  elseif pageNum == 4 then
-    draw_ref()
   end
   screen.stroke()
   screen.update()
