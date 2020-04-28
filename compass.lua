@@ -1,23 +1,14 @@
 --
--- Compass (3.0) -- Key/Enc Improvements
+-- Compass (3.0)
 -- Command-based looper
--- @olivier
 -- llllllll.co/t/compass/25192
--- w/ contributions from
--- @justmat + @gonecaving
+-- @olivier w/ contributions
+-- from @justmat + @gonecaving
 --
--- E1: Scroll pages
--- E2: Navigate to step
--- E3: Select command
--- K1 + K2: Reset commands
--- K1 + K3: Randomize commands
--- K3 (short): Rec ON/OFF
--- K3 (long): Clear buffers
--- K1 + E1 : sequence length
--- K1 + E2 : set loop start
--- K1 + E3 : set loop end
+--
+-- see full manual @
+-- compass-manual.glitch.me
 
--- engine.name = "Decimatec"
 g = grid.connect()
 sc = softcut
 
@@ -27,7 +18,7 @@ local recLevel = 0
 local pos = 1
 local edit = 1
 local clkSpd = 1
-local mute_sc = 1
+local division = 1
 
 local loopLength = 64
 local loopStart = 1
@@ -47,7 +38,6 @@ local KEYDOWN2 = 0
 local key_mode = 0
 local edit_lev = 0
 
--- local pages = {"", "", ""}
 local positions = {0,0}
 local rate_pos = 5
 local rates = {-2,-1,-0.5,0.5,1,2}
@@ -61,7 +51,7 @@ local metro_state = 1
 local Arcify = include("lib/arcify")
 local arcify = Arcify.new()
 
-local COMMANDS = 20
+local COMMANDS = 18
 local act = {
   label = {}
 }
@@ -76,7 +66,7 @@ function update_positions(i,x)
     else
       sc.pre_level(i,params:get("Overdub"))
     end
-    sc.level(i,mute_sc)
+    -- sc.level(i,1)
     sc.rate_slew_time(i,rateSlew)
     sc.rec_level(i,recLevel)
     sc.loop_start(i,loopStart)
@@ -133,23 +123,19 @@ end
 
 -- COMMANDS
 
--- Sequence
-function metroSteady() m.time = clkSpd end
-function metroDec() m.time = util.clamp(clkSpd * 2, clkSpd/16, clkSpd*4) end
-function metroInc() m.time = util.clamp(clkSpd / 2, clkSpd/16, clkSpd*4) end
-function metroTop() m.time = clkSpd/16 end
-function metroBottom() m.time = clkSpd*4 end
+-- Sequence ommands
+function metroSteady() division = 1 end
+function metroDec() division = util.clamp(division / 2, 1, 16) end
+function metroInc() division = util.clamp(division * 2, 1, 16) end
+function metroTop() division = 16 end
+function metroBottom() division = 1 end
 function stepRnd() pos = math.random(1,#step) end
 
-
-
--- sc
+-- Softcut
 function rateForward() for i=1,2 do sc.rate(i,rates[5]) end end
 function rateReverse() for i=1,2 do sc.rate(i,rates[2]) end end
-
 function rateInc() rate_pos = util.clamp(rate_pos+1,1,6) ; for i=1,2 do sc.rate(i,rates[rate_pos]) end end
 function rateDec() rate_pos = util.clamp(rate_pos-1,1,6) ; for i=1,2 do sc.rate(i,rates[rate_pos]) end end
-
 function rateRnd() for i=1,2 do sc.rate(i,rates[math.random(1,6)]) end end
 function sPosStart() for i=1,2 do sc.position(i,loopStart) end end
 function sPosRnd() for i=1,2 do sc.position(i,math.random(loopStart,loopEnd)) end end
@@ -157,18 +143,16 @@ function loopRnd() loopStart = math.random(sPoint,loopEnd-1) ; loopEnd = math.ra
 function rndPanL() params:set("Pan (L)",math.random(0,8)/-10) end
 function rndPanR() params:set("Pan (R)",math.random(0,8)/10) end
 function toggleRec() recLevel = 1 - recLevel end
-function mute() mute_sc = 1 - mute_sc end
 
 -- Crow
 function crowTrig() crow.output[1].execute() end
 function crowRnd() crow.output[2].volts = math.random(10) end
 
 local command_list = {
-  {metroSteady,1,"C","Steady clock (1s.)"},
-  {metroDec,1,"<", "Decrement clock speed"},
-  {metroInc,1,">", "Increment clock speed"},
   {metroBottom,1,"[", "Slowest clock speed"},
   {metroTop,1,"]", "Fastest clock speed"},
+  {metroDec,1,"<", "Decrement clock speed"},
+  {metroInc,1,">", "Increment clock speed"},
   {stepRnd,1,"?", "Random sequence position"},
   {rateForward,1,"F", "Set SC rate to 1x"},
   {rateReverse,1,"R", "Set SC rate to -1x"},
@@ -181,7 +165,6 @@ local command_list = {
   {rndPanL,1,"(", "Random pan position (L)"},
   {rndPanR,1,")", "Random pan position (R)"},
   {toggleRec,1,"::", "Toggle recording on/off"},
-  {mute,1,"/", "Toggle SC level on/off"},
   {crowTrig,1,"T", "Crow trig (out 1)"},
   {crowRnd,1,"V", "Crow rnd voltage (out 2)"},
 }
@@ -194,13 +177,13 @@ function build_command_list()
       table.insert(act.label,command_list[i][3])
     end
   end
-  mute_sc = 1
-  -- redraw()
 end
 
 local grid_pattern = {}
 
 function init()
+
+  master_clock = clock.run(bang)
 
   -- COMMAND SETUP
   build_command_list()
@@ -217,7 +200,7 @@ function init()
   grid_redraw()
 
   -- PARAMS
-  params:add_group("COMPASS",30)
+  params:add_group("COMPASS",27)
   params:add_separator("RECORDING")
   params:add_option("Input", "Input", {"Stereo", "Mono (L)"}, 1)
   params:set_action("Input", function(x) set_input(x) end)
@@ -225,8 +208,6 @@ function init()
   params:set_action("Record Level", function(x) for i=1,2 do sc.rec_level(i,x) end  end)
   params:add_control("Overdub","Overdub",controlspec.new(0,1,'lin',0.01,1))
   params:set_action("Overdub", function(x) end) --pre = x
-  -- params:add_control("Bit depth", "Bit depth", controlspec.new(4, 31, "lin", 0, 31, ''))
-  -- params:set_action("Bit depth", function(x) engine.sdepth(x) end)
 
   params:add_separator("BUFFERS")
   params:add{id="Rate (coarse)", name="Rate (coarse)", type="control",
@@ -254,11 +235,9 @@ function init()
   params:add_control("End point","End point",controlspec.new(sPoint+1,65,'lin',1,65))
   params:set_action("End point", function(x) ePoint = util.clamp(x,sPoint+1,65); loopEnd = ePoint end)
 
-  params:add_separator("CLOCKING")
-  params:add_option("Clock", "Clock", {"Internal", "crow in 1"},1)
-  params:set_action("Clock", function(x) set_clock(x) end)
-  params:add_number("Clock speed","Int. Clock speed",1,4,1)
-  params:set_action("Clock speed", function(x) clkSpd = x end)
+  -- params:add_separator("CLOCKING")
+  -- params:add_option("Clock", "Clock", {"Internal", "crow in 1"},1)
+  -- params:set_action("Clock", function(x) set_clock(x) end)
 
   params:add_separator("CROW")
   params:add_option("Mode (input 2)", "Mode (input 2)", {"Off", "SC Level", "SC Rate"}, 1)
@@ -275,9 +254,12 @@ function init()
   audio.level_adc_cut(1)
   audio.level_eng_cut(1)
 
+  -- CLOCK
+
+
   -- METROS
-  m = metro.init(count,clkSpd,-1)
-  m:start()
+  -- m = metro.init(count,clkSpd,-1)
+  -- m:start()
   e = metro.init(pulse,0.10,-1)
   ledcounter = metro.init(ledclk, 0.10, -1)
   ledcounter:start()
@@ -326,6 +308,13 @@ end
 
 --------------------------------------------------
 
+function bang()
+  while true do
+    clock.sync(1/division)
+    count()
+  end
+end
+
 function count()
   pos = (pos % #step) + 1
   if edit == pos and KEYDOWN2 == 1 then
@@ -373,7 +362,8 @@ function enc(n,d)
         edit = #step
       end
     if KEYDOWN1 == 0 then
-      pageNum = util.clamp(pageNum+d,1,3)
+      -- increase max to 3 when third edit page is built
+      pageNum = util.clamp(pageNum+d,1,2)
     else
       if pageNum == 1 then
         STEPS = util.clamp(STEPS+d,2,16)
@@ -443,9 +433,9 @@ function key(n,z)
         if pageNum == 1 then
           metro_state = 1 - metro_state
           if metro_state == 1 then
-            m:start()
+            master_clock = clock.run(bang)
           else
-            m:stop()
+            clock.cancel(master_clock)
           end
         end
       end
@@ -593,9 +583,9 @@ g.key = function(x,y,z)
       if x == 16 and y == 8 then
         metro_state = 1 - metro_state
         if metro_state == 1 then
-          m:start()
+          master_clock = clock.run(bang)
         else
-          m:stop()
+          clock.cancel(master_clock)
         end
       elseif x == 1 and y == 2 then
         pattern_mode = 1 - pattern_mode
@@ -614,25 +604,25 @@ g.key = function(x,y,z)
       end
     end
   else
-    for i=1,10 do
-      if x == i+3 and y == 4 and z == 1 then
+    for i=1,9 do
+      if x == i and y == 4 and z == 1 then
         if gridALT == 1 then
           command_list[i][2] = 1 - command_list[i][2]
           build_command_list()
           commReset()
         end
-        edit = x-3
+        edit = x
 
       end
     end
-    for i=11,20 do
-      if x == ((i-10)+3) and y == 5 and z == 1 then
+    for i=10,#command_list do
+      if x == (i-9) and y == 5 and z == 1 then
         if gridALT == 1 then
           command_list[i][2] = 1 - command_list[i][2]
           build_command_list()
           commReset()
         end
-        edit = x+7
+        edit = x+9
 
       end
     end
@@ -722,11 +712,11 @@ function grid_redraw()
       g:led(i,5,i==util.clamp(math.abs(math.floor((positions[2]*16)/65)+1),1,16) and 15 or 5)
     end
   elseif pageNum == 2 then
-    for i=1,10 do
-      g:led((i+3),4,(command_list[i][2]*5)+3)
+    for i=1,9 do
+      g:led((i),4,(command_list[i][2]*5)+3)
     end
-    for i=11,20 do
-      g:led(((i-10)+3),5,(command_list[i][2]*5)+3)
+    for i=10,#command_list do
+      g:led(((i-9)),5,(command_list[i][2]*5)+3)
     end
   end
   g:refresh()
@@ -749,13 +739,13 @@ function drawMenu()
       screen.text("Edit")
       screen.move(20,10)
       screen.level(1)
-      if pageNum == 2 then
-        screen.text("| 1")
-      elseif pageNum == 3 then
-        screen.text("| 2")
-      elseif pageNum == 4 then
-        screen.text("| 3")
-      end
+      -- if pageNum == 2 then
+      --   screen.text("| 1")
+      -- elseif pageNum == 3 then
+      --   screen.text("| 2")
+      -- elseif pageNum == 4 then
+      --   screen.text("| 3")
+      -- end
     end
     screen.move(124,10)
     screen.level(3)
@@ -806,7 +796,7 @@ function drawCommands()
 end
 
 function draw_ref()
-  for i=1,10 do
+  for i=1,9 do
     screen.level((command_list[i][2]*10)+1)
     screen.move(i*10-8,27)
     screen.text(command_list[i][3])
@@ -820,12 +810,12 @@ function draw_ref()
     screen.line_rel(5,0)
     screen.stroke()
   end
-  for i=11,20 do
+  for i=10,#command_list do
     screen.level((command_list[i][2]*10)+1)
-    screen.move((i-10)*10-8,42)
+    screen.move((i-8)*10-18,42)
     screen.text(command_list[i][3])
     --
-    screen.move((i-10)*10-8,47)
+    screen.move((i-8)*10-18,47)
     if i == edit then
       screen.level(10)
     else
@@ -888,30 +878,30 @@ function drawLoop()
   screen.stroke()
 end
 
-function set_clock(x)
-  if x == 1 then
-    m:start()
-    crow.input[1].mode("none")
-    for i=1,5 do
-      command_list[i][2] = 1
-    end
-    build_command_list()
-    commReset()
-  else
-    m:stop()
-    crow.input[1].mode("change", 2.0, 0.25, "rising")
-    for i=1,5 do
-      command_list[i][2] = 0
-    end
-    build_command_list()
-    commReset()
-  end
-  for i=1,#step do
-    step[i] = 1
-  end
-  count()
-  redraw()
-end
+-- function set_clock(x)
+--   if x == 1 then
+--     m:start()
+--     crow.input[1].mode("none")
+--     for i=1,5 do
+--       command_list[i][2] = 1
+--     end
+--     build_command_list()
+--     commReset()
+--   else
+--     m:stop()
+--     crow.input[1].mode("change", 2.0, 0.25, "rising")
+--     for i=1,5 do
+--       command_list[i][2] = 0
+--     end
+--     build_command_list()
+--     commReset()
+--   end
+--   for i=1,#step do
+--     step[i] = 1
+--   end
+--   count()
+--   redraw()
+-- end
 
 function set_crowIn2(x)
   if x == 1 then
