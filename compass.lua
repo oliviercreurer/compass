@@ -200,6 +200,9 @@ function init()
   grid_redraw()
 
   -- PARAMS
+
+  params:set("clock_tempo",80)
+
   params:add_group("COMPASS",27)
   params:add_separator("RECORDING")
   params:add_option("Input", "Input", {"Stereo", "Mono (L)"}, 1)
@@ -345,11 +348,7 @@ end
 
 function randomize_steps()
   for i=1,#step do
-    if params:get("Clock") == 1 then
-      step[i] = math.random(COMMANDS)
-    else
-      step[i] = math.random(COMMANDS)
-    end
+    step[i] = math.random(COMMANDS)
   end
 end
 
