@@ -1,5 +1,5 @@
 --
--- Compass (3.0)
+-- Compass (3.1)
 -- Command-based looper
 -- llllllll.co/t/compass/25192
 -- @olivier w/ contributions
@@ -203,7 +203,7 @@ function init()
 
   params:set("clock_tempo",80)
 
-  params:add_group("COMPASS",27)
+  params:add_group("COMPASS",26)
   params:add_separator("RECORDING")
   params:add_option("Input", "Input", {"Stereo", "Mono (L)"}, 1)
   params:set_action("Input", function(x) set_input(x) end)
@@ -230,8 +230,8 @@ function init()
   params:add_control("Pan slew", "Pan (slew)", controlspec.new(0,2,'lin', 0.01,0.25))
   params:set_action("Pan slew", function(x) for i=1,2 do sc.pan_slew_time(i,x) end end)
 
-  params:add_control("Level slew", "Level (slew)", controlspec.new(0,10,'lin', 0.01,0.25))
-  params:set_action("Level slew", function(x) for i=1,2 do sc.level_slew_time(i,x) end end)
+  -- params:add_control("Level slew", "Level (slew)", controlspec.new(0,10,'lin', 0.01,0.25))
+  -- params:set_action("Level slew", function(x) for i=1,2 do sc.level_slew_time(i,x) end end)
 
   params:add_control("Start point","Start point",controlspec.new(1,ePoint-1,'lin',1,1))
   params:set_action("Start point", function(x) sPoint = util.clamp(x,1,ePoint-1); loopStart = sPoint end)
