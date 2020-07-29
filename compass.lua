@@ -183,7 +183,7 @@ local grid_pattern = {}
 
 function init()
 
-  master_clock = clock.run(bang)
+  main_clk = clock.run(bang)
 
   -- COMMAND SETUP
   build_command_list()
@@ -432,9 +432,9 @@ function key(n,z)
         if pageNum == 1 then
           metro_state = 1 - metro_state
           if metro_state == 1 then
-            master_clock = clock.run(bang)
+            main_clk = clock.run(bang)
           else
-            clock.cancel(master_clock)
+            clock.cancel(main_clk)
           end
         end
       end
@@ -582,9 +582,9 @@ g.key = function(x,y,z)
       if x == 16 and y == 8 then
         metro_state = 1 - metro_state
         if metro_state == 1 then
-          master_clock = clock.run(bang)
+          main_clk = clock.run(bang)
         else
-          clock.cancel(master_clock)
+          clock.cancel(main_clk)
         end
       elseif x == 1 and y == 2 then
         pattern_mode = 1 - pattern_mode
