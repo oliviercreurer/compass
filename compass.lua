@@ -1,5 +1,5 @@
 --
--- Compass (3.1)
+-- Compass (3.2)
 -- Command-based looper
 -- llllllll.co/t/compass/25192
 -- @olivier w/ contributions
@@ -144,6 +144,20 @@ function rndPanL() params:set("Pan (L)",math.random(0,8)/-10) end
 function rndPanR() params:set("Pan (R)",math.random(0,8)/10) end
 function toggleRec() recLevel = 1 - recLevel end
 
+-- Record
+function recordP()
+  if recLevel == 0 then
+    sc.buffer_clear()
+    sPosStart()
+    loopEnd = loopLength
+    recLevel = 1
+  else
+    recLevel = 0
+    sPosStart()
+    loopEnd = math.floor(positions[1])
+  end
+end
+
 -- Crow
 function crowTrig() crow.output[1].execute() end
 function crowRnd() crow.output[2].volts = math.random(10) end
@@ -211,6 +225,8 @@ function init()
   params:set_action("Record Level", function(x) for i=1,2 do sc.rec_level(i,x) end  end)
   params:add_control("Overdub","Overdub",controlspec.new(0,1,'lin',0.01,1))
   params:set_action("Overdub", function(x) end) --pre = x
+  params:add_control("Rec", "Rec", controlspec.new(0,1,'lin',0.01,1))
+  params:set_action("Rec", function() recordP() end)
 
   params:add_separator("BUFFERS")
   params:add{id="Rate (coarse)", name="Rate (coarse)", type="control",
