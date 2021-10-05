@@ -154,7 +154,7 @@ function recordP()
   else
     recLevel = 0
     sPosStart()
-    loopEnd = positions[1]
+    loopEnd = math.floor(positions[1])
   end
 end
 
